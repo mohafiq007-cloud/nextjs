@@ -10,8 +10,10 @@ export async function signUp(form:FormData) {
  const password=String(form.get("password")||"");
  if(name.length<2||name.length>120||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||password.length<12||password.length>128)
   msg("Enter your name, a valid email and a password of at least 12 characters");
- const {error}=await neonAuth().signUp.email({name,email,password});
- if(error)msg("Registration could not be completed. Review the details and retry.");
+ let failed=false;
+ try{const {error}=await neonAuth().signUp.email({name,email,password});failed=Boolean(error);}
+ catch{failed=true;}
+ if(failed)msg("Registration could not be completed. Review the details and retry.");
  msg("Account requested. Complete email verification before accessing MARIZ CO.");
 }
 export async function signIn(form:FormData) {
@@ -19,8 +21,10 @@ export async function signIn(form:FormData) {
  const email=String(form.get("email")||"").trim().toLowerCase();
  const password=String(form.get("password")||"");
  if(!email||!password)msg("Enter an email and password");
- const {error}=await neonAuth().signIn.email({email,password});
- if(error)msg("Sign-in failed. Check your credentials and verify your email.");
+ let failed=false;
+ try{const {error}=await neonAuth().signIn.email({email,password});failed=Boolean(error);}
+ catch{failed=true;}
+ if(failed)msg("Sign-in failed. Check your credentials and verify your email.");
  redirect("/co/workspace");
 }
 export async function signOut() {
