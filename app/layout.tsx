@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MARIZ — Connected Business Solutions (V2 Preview)",
-  description: "Explore MARIZ CO, MARIZ POS and MARIZ Events. V2 private preview with simulated product demos.",
+  description: "MARIZ POS and custom web software for business. V2 preview with a simulated POS demonstration.",
   robots: { index: false, follow: false },
 };
 
