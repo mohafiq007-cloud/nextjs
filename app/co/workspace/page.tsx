@@ -1,87 +1,59 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { marizBackendConfigured, marizServerClient } from "../../../lib/mariz/supabase-server";
-import { createCompany, startKyb, uploadKybDocument, submitKyb } from "./actions";
-import { signOut } from "../auth/actions";
+import {redirect} from "next/navigation";
+import {getVerifiedNeonUser,neonBackendConfigured} from "../../../lib/mariz/neon-auth-server";
+import {neonDatabase} from "../../../lib/mariz/neon-db";
+import {createCompany,startKyb} from "./actions";
+import {signOut} from "../auth/actions";
 
-export const dynamic = "force-dynamic";
-
-type Company = { id:string; legal_name:string; registration_no:string; verification_status:string; entity_type:string };
-type Application = { id:string; status:string; created_at:string };
-
-export default async function Workspace({ searchParams }: { searchParams: Promise<{message?: string}> }) {
-  if (!marizBackendConfigured()) return <main className="interior"><h1>MARIZ CO Workspace</h1><p>Awaiting isolated V2 database. No data collection is active.</p><Link href="/co/auth">Company access</Link></main>;
-  const supabase = await marizServerClient();
-  const { data: { user },error } = await supabase.auth.getUser();
-  if (error||!user) redirect("/co/auth");
-  const memberships = await supabase.from("mariz_memberships").select("organization_id,member_role").eq("user_id",user.id);
-  const ids=(memberships.data || []).map(m=>m.organization_id);
-  let companies:Company[]=[];
-  if(ids.length) {
-    const { data }=await supabase.from("mariz_organizations").select("id,legal_name,registration_no,verification_status,entity_type").in("id",ids);
-    companies=(data || []) as Company[];
-  }
-  const appByOrg: Record<string,Application|undefined>={};
-  for(const company of companies){
-    const { data }=await supabase.from("mariz_kyb_applications").select("id,status,created_at")
-      .eq("organization_id",company.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
-    if(data)appByOrg[company.id]=data;
-  }
-  // Product access is distinct from free company registration and from the demo.
-  const activePosByOrg = new Set<string>();
-  const verifiedOrgIds=companies.filter(c=>c.verification_status==="verified").map(c=>c.id);
-  if(verifiedOrgIds.length){
-    const {data:activePos,error:posError}=await supabase.from("mariz_pos_workspaces")
-      .select("organization_id").in("organization_id",verifiedOrgIds).eq("status","active");
-    if(!posError)for(const row of activePos||[])activePosByOrg.add(row.organization_id);
-  }
-  const {message}=await searchParams;
-  return <main className="interior">
-    <div className="interior-head"><span className="eyebrow">MARIZ CO / VERIFIED COMPANY GATEWAY</span><h1>Your company workspace.</h1><p>Free company registration. The prepared MARIZ POS demo unlocks after verification. Real product activation requires a separate commercial agreement.</p></div>
-    <form action={signOut} style={{marginBottom:22}}><button className="button button-outline">Sign out</button></form>
-    {message&&<div className="notice" role="status">{message.slice(0,240)}</div>}
-    {companies.map(c=>{
-      const a=appByOrg[c.id];
-      return <section className="content-panel" style={{marginBottom:24}} key={c.id}>
-        <div className="panel-top"><div><span className="eyebrow">{c.entity_type.toUpperCase()} · {c.registration_no}</span><h2>{c.legal_name}</h2></div>
-          <span className={"tag "+(c.verification_status==="verified"?"green":"amber")}>{c.verification_status}</span></div>
-        {c.verification_status==="verified"?
-          <div><p>Company KYB approved. Your prepared MARIZ POS demo is ready. MARIZ product activation is separate and chargeable only when explicitly accepted.</p>
-            <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
-              <Link href="/co/pos/preview" className="button button-outline">Explore free MARIZ POS demo →</Link>
-              {activePosByOrg.has(c.id)&&<Link href={"/co/pos/"+c.id+"/backoffice"} className="button button-primary">Open MARIZ POS Back Office →</Link>}
-            </div></div>
-        :<div>
-          <p style={{color:"#667c72"}}>KYB application: <strong>{a?.status || "Not started"}</strong></p>
-          {!a && <form action={startKyb}><input type="hidden" name="organization_id" value={c.id}/><button className="button button-primary">Start company verification →</button></form>}
-          {a && ["draft","needs_information"].includes(a.status) && <>
-            <form action={uploadKybDocument} encType="multipart/form-data" className="form-grid" style={{marginTop:20}}>
-              <input type="hidden" name="organization_id" value={c.id}/><input type="hidden" name="application_id" value={a.id}/>
-              <label>Document type<select name="document_type" defaultValue="registration_profile"><option value="registration_profile">Current official SSM business/company profile</option><option value="authority_letter">Representative authority letter</option><option value="registration_certificate">Registration certificate</option><option value="other">Other supporting evidence</option></select></label>
-              <label>Private document (PDF, PNG or JPEG; up to 10MB)<input type="file" name="document" accept=".pdf,.png,.jpg,.jpeg" required/></label>
-              <button className="button button-outline">Upload verification evidence →</button>
-            </form>
-            <form action={submitKyb} style={{marginTop:22}}><input type="hidden" name="application_id" value={a.id}/>
-              <label style={{display:"block",fontSize:12,marginBottom:14}}><input type="checkbox" name="declaration" value="yes" required/> I confirm I am authorized to act for this organization and the submitted information is accurate.</label>
-              <button className="button button-primary">Submit for MARIZ review →</button></form>
-          </>}
-          {a && ["submitted","under_review"].includes(a.status) && <p className="notice">Your company is under review. No payment is required and no product subscription has been started.</p>}
-          {a && a.status==="rejected" && <p className="notice">This application was rejected. Please contact MARIZ support to appeal or correct the submission.</p>}
-        </div>}
-      </section>;
-    })}
-    <section className="content-panel"><h2 style={{fontSize:25,marginBottom:12}}>Register another company</h2><p className="footnote">Only create an organization you are authorized to represent. If the company already exists in MARIZ, request an invitation instead of registering it again.</p>
-      <form action={createCompany} className="form-grid">
-        <label>Jurisdiction<select name="country" defaultValue="MY"><option value="MY">Malaysia (MY)</option></select></label>
-        <label>Entity type<select name="entity_type" required defaultValue="company"><option value="company">Sdn Bhd / Berhad</option><option value="sole_proprietor">Sole proprietorship</option><option value="partnership">Partnership</option><option value="llp">LLP / PLT</option><option value="society">Society</option><option value="other">Other legal entity</option></select></label>
-        <label>Legal registered name<input name="legal_name" required minLength={3} maxLength={200}/></label>
-        <label>SSM / registrar number<input name="registration_no" required minLength={4} maxLength={80}/></label>
-        <label className="full">Registered business address<input name="address" required minLength={8} maxLength={700}/></label>
-        <label>Business email<input name="business_email" type="email" required/></label>
-        <label style={{alignSelf:"end"}}><span><input type="checkbox" name="authority_confirmation" value="yes" required/> I am authorized to register this company.</span></label>
-        <button className="button button-primary">Create free company draft →</button>
-      </form>
-    </section>
-    <p style={{marginTop:22}}><Link href="/">← MARIZ Homepage</Link></p>
-  </main>;
+export const dynamic="force-dynamic";
+type Company={organization_id:string;legal_name:string;registration_no:string;verification_status:string;entity_type:string;kyb_id:string|null;kyb_status:string|null;pos_status:string|null};
+export default async function Workspace({searchParams}:{searchParams:Promise<{message?:string}>}){
+ if(!neonBackendConfigured())return <main className="interior"><h1>MARIZ CO</h1><p>Secure Neon company access is not active on this preview yet. No registration data is collected.</p><Link href="/co/auth">Company access</Link></main>;
+ const user=await getVerifiedNeonUser();
+ if(!user)redirect("/co/auth?message=Verify%20your%20email%20before%20accessing%20MARIZ%20CO");
+ const sql=neonDatabase();
+ const companies=(await sql.query(
+  'SELECT c.organization_id,c.legal_name,c.registration_no,c.verification_status,c.entity_type,a.id AS kyb_id,a.status AS kyb_status,e.status AS pos_status FROM mariz_core.company_profiles c JOIN neon_auth.member m ON m."organizationId"=c.organization_id LEFT JOIN LATERAL (SELECT id,status FROM mariz_core.kyb_applications WHERE organization_id=c.organization_id ORDER BY created_at DESC LIMIT 1) a ON true LEFT JOIN mariz_core.product_entitlements e ON e.organization_id=c.organization_id AND e.product_code=$2 WHERE m."userId"=$1::uuid ORDER BY c.created_at DESC',[user.id,"pos"])) as Company[];
+ const {message}=await searchParams;
+ return <main className="interior">
+  <div className="interior-head"><span className="eyebrow">MARIZ CO / FREE COMPANY GATEWAY</span>
+   <h1>Your company workspace.</h1>
+   <p>Register your company once, complete legal verification and explore the prepared POS demo. Registration is free; live MARIZ POS activation requires a separate paid agreement.</p></div>
+  <form action={signOut} style={{marginBottom:22}}><button className="button button-outline">Sign out</button></form>
+  {message&&<div className="notice" role="status">{message.slice(0,240)}</div>}
+  {companies.map(c=><section key={c.organization_id} className="content-panel" style={{marginBottom:22}}>
+   <div className="panel-top"><div><span className="eyebrow">{c.entity_type.toUpperCase()} · {c.registration_no}</span>
+    <h2>{c.legal_name}</h2></div><span className={"tag "+(c.verification_status==="verified"?"green":"amber")}>{c.verification_status}</span></div>
+   {c.verification_status==="verified"?<div>
+    <p>Your organization is verified. Enjoy the unlimited prepared MARIZ POS demo. Live product billing and activation are separate.</p>
+    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}><Link className="button button-outline" href="/co/pos/preview">Explore free POS demo →</Link>
+    {c.pos_status==="active"&&<Link className="button button-primary" href={"/co/pos/"+c.organization_id+"/backoffice"}>Open activated Back Office →</Link>}</div>
+   </div>:<div>
+    <p>KYB application: <strong>{c.kyb_status||"Not yet started"}</strong></p>
+    {!c.kyb_id&&<form action={startKyb}><input type="hidden" name="organization_id" value={c.organization_id}/><button className="button button-primary">Start KYB →</button></form>}
+    {c.kyb_id&&["draft","needs_information"].includes(c.kyb_status||"")&&<div className="notice">
+     This application is a draft. Official SSM evidence upload is being integrated with Neon's private storage; submission and approval will remain blocked until that process is secure.
+    </div>}
+    {["submitted","under_review"].includes(c.kyb_status||"")&&<p className="notice">Your company is awaiting MARIZ review.</p>}
+   </div>}
+  </section>)}
+  <section className="content-panel">
+   <h2 style={{fontSize:25,marginBottom:10}}>Register a company for free</h2>
+   <p className="footnote">Only register an organization you are authorized to represent. This does not activate or charge for MARIZ POS.</p>
+   <form action={createCompany} className="form-grid">
+    <label>Jurisdiction<select name="country" defaultValue="MY"><option value="MY">Malaysia</option></select></label>
+    <label>Entity type<select name="entity_type" defaultValue="company">
+     <option value="company">Sdn Bhd / Berhad</option><option value="sole_proprietor">Sole proprietorship</option>
+     <option value="partnership">Partnership</option><option value="llp">LLP / PLT</option>
+     <option value="society">Society</option><option value="other">Other legal entity</option>
+    </select></label>
+    <label>Registered legal name<input name="legal_name" required minLength={3} maxLength={200}/></label>
+    <label>SSM registration number<input name="registration_no" required minLength={4} maxLength={80}/></label>
+    <label className="full">Registered address<input name="address" required minLength={8} maxLength={700}/></label>
+    <label>Business email<input type="email" name="business_email" required/></label>
+    <label style={{alignSelf:"end"}}><span><input type="checkbox" name="authority_confirmation" value="yes" required/> I am authorized to register this company.</span></label>
+    <button className="button button-primary">Create free company profile →</button>
+   </form>
+  </section>
+ </main>;
 }
