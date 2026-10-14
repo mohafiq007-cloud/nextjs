@@ -79,3 +79,11 @@
 .posv2-customer{border:1px solid #e3d4bf;border-radius:8px;background:#fbf4ea;padding:12px;margin:10px 0;display:flex;flex-direction:column;gap:9px}
 .posv2-customer p{font-size:11px;color:#795b3b;line-height:1.5;margin:0}
 @media(max-width:600px){.posv2-brand img{width:80px;height:64px}}
+
+/* Production Back Office skeleton; all writes are verified server actions and audited SQL RPCs. */
+.posv2-live-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.posv2-live-grid .posv2-panel{min-width:0}
+.posv2-live-grid .posv2-row{flex-wrap:wrap}
+.posv2-live-grid select{border:1px solid #d9c9b4;padding:12px;border-radius:7px;background:#fffdfa;color:#342920;min-width:0}
+.posv2-live-grid .posv2-form label{min-width:0}
+@media(max-width:850px){.posv2-live-grid{grid-template-columns:1fr}}
