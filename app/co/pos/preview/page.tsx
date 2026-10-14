@@ -1,6 +1,24 @@
-import Link from "next/link";
-import PosSetupPreview from "./PosSetupPreview";
-export const metadata={title:"MARIZ POS — Back Office & Terminal Preview",robots:{index:false,follow:false}};
-export default function PosPreviewPage(){
- return <main className="interior pos-preview-page"><header className="pos-v2-page-head"><div><div className="eyebrow">MARIZ HQ V2 / MARIZ POS</div><h1>Back Office & Terminal</h1><p>Preview the company-linked POS onboarding workflow. All interactions are simulated and isolated from live restaurants.</p></div><Link href="/" className="button button-outline">← MARIZ website</Link></header><PosSetupPreview/></main>
+import { redirect } from "next/navigation";
+import PosV2Demo from "../../../pos-v2/pos-v2-demo";
+import { marizBackendConfigured, marizServerClient } from "../../../../lib/mariz/supabase-server";
+
+export const dynamic="force-dynamic";
+export const metadata={title:"MARIZ POS V2 — Back Office & Store Terminal",robots:{index:false,follow:false}};
+
+export default async function POSPreview() {
+  // The preview is simulated only. If a dedicated V2 Supabase backend is connected,
+  // restrict this link to members of an approved MARIZ CO company.
+  if(marizBackendConfigured()){
+    const client=await marizServerClient();
+    const {data:{user},error}=await client.auth.getUser();
+    if(error||!user)redirect("/co/auth");
+    const {data:members}=await client.from("mariz_memberships")
+      .select("organization_id").eq("user_id",user.id).eq("membership_status","active");
+    const ids=(members||[]).map(x=>x.organization_id);
+    if(!ids.length)redirect("/co/workspace");
+    const {data:approved}=await client.from("mariz_organizations")
+      .select("id").in("id",ids).eq("verification_status","verified").limit(1);
+    if(!approved?.length)redirect("/co/workspace");
+  }
+  return <PosV2Demo/>;
 }
