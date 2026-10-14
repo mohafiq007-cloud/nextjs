@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 import Link from "next/link";
-import "../pos-v2/pos-v2.css";
+import "../../pos-v2/pos-v2.css";
 
 type Staff={id:string;staff_name:string;role:string};
 type Session={state:string;device_id?:string;outlet_id?:string;staff?:Staff[];operator?:{id:string;name:string;role:string}|null};
