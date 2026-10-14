@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { marizBackendConfigured, marizServerClient } from "../../../../../lib/mariz/supabase-server";
 import { createPosOutlet, createPosStaff, createPosItem, createPosPendingDevice } from "./actions";
+import PairingAdminForm from "./pairing-admin-form";
+import { enrollPosStaffPin } from "./terminal-security-actions";
 import "../../../../pos-v2/pos-v2.css";
 
 export const dynamic="force-dynamic";
@@ -79,12 +81,21 @@ export default async function CompanyPOSBackOffice({
        <label>Outlet name<input required name="name" minLength={2} maxLength={140} placeholder="e.g. Main Outlet"/></label>
        <button className="posv2-primary">Create outlet</button></form></section>
      <section className="posv2-panel"><h2>Staff records</h2>
-      {staff.map(s=><div className="posv2-row" key={s.id}><strong>{String(s.staff_name)}</strong><small>{String(s.role)} · {String(s.status)}</small></div>)}
+      {staff.map(s=><div className="posv2-staff-security" key={s.id}>
+       <div className="posv2-row"><strong>{String(s.staff_name)}</strong><small>{String(s.role)} · {String(s.status)}</small></div>
+       <form action={enrollPosStaffPin} className="posv2-form">
+        <input type="hidden" name="organization_id" value={orgId}/>
+        <input type="hidden" name="staff_id" value={String(s.id)}/>
+        <label>New staff PIN<input type="password" name="pin" required inputMode="numeric" pattern="[0-9]{6,8}" minLength={6} maxLength={8} autoComplete="new-password" placeholder="6–8 digits"/></label>
+        <label>Confirm PIN<input type="password" name="confirm_pin" required inputMode="numeric" pattern="[0-9]{6,8}" minLength={6} maxLength={8} autoComplete="new-password"/></label>
+        <button className="posv2-primary">Enroll / rotate PIN</button>
+       </form>
+      </div>)}
       <form action={createPosStaff} className="posv2-form"><input type="hidden" name="organization_id" value={orgId}/>
        <label>Staff name<input name="name" required minLength={2} maxLength={140}/></label>
        <label>Role<select name="role" defaultValue="cashier"><option value="cashier">Cashier</option><option value="manager">Manager</option><option value="kitchen">Kitchen</option></select></label>
        <button className="posv2-primary">Add staff record</button></form>
-      <p>Staff PIN enrollment remains disabled until device-bound authentication is implemented.</p></section>
+      <p>PIN enrollment stores only a salted, pepper-protected hash. Staff sessions are time-limited and revocable; full end-to-end testing is required before live activation.</p></section>
      <section className="posv2-panel"><h2>Products and prices</h2>
       {products.map(p=><div className="posv2-row" key={p.id}><strong>{String(p.name)}</strong><small>{money(p.price_minor)}</small></div>)}
       <form action={createPosItem} className="posv2-form"><input type="hidden" name="organization_id" value={orgId}/>
@@ -92,12 +103,15 @@ export default async function CompanyPOSBackOffice({
        <label>Price (MYR)<input required name="price" inputMode="decimal" placeholder="16.90"/></label>
        <button className="posv2-primary">Add item</button></form></section>
      <section className="posv2-panel"><h2>Terminal registry</h2>
-      {devices.map(d=><div className="posv2-row" key={d.id}><strong>{String(d.display_name)}</strong><small>{String(d.status)}</small></div>)}
+      {devices.map(d=><div key={d.id} className="posv2-staff-security">
+        <div className="posv2-row"><strong>{String(d.display_name)}</strong><small>{String(d.status)}</small></div>
+        {d.status==="pending"&&<PairingAdminForm orgId={orgId} deviceId={String(d.id)}/>}
+       </div>)}
       <form action={createPosPendingDevice} className="posv2-form"><input type="hidden" name="organization_id" value={orgId}/>
        <label>Outlet<select name="outlet_id" required>{outlets.map(o=><option key={o.id} value={String(o.id)}>{String(o.outlet_name)}</option>)}</select></label>
        <label>Terminal name<input required name="name" minLength={2} maxLength={80} placeholder="Counter 01"/></label>
        <button disabled={outlets.length===0} className="posv2-primary">Register pending device</button></form>
-      <p>Pending devices cannot take orders. Secure pairing, device credentials and printer binding are not live.</p></section>
+      <p>Pending devices cannot transact. Live device pairing is controlled by the deployment security switch and stays disabled until tested; printer binding remains a later milestone.</p></section>
     </div>
     <section className="posv2-panel" style={{marginTop:20}}><h2>Recent sales</h2>
       {sales.length===0?<p>No live sales yet. Transaction posting is disabled until the sales engine is tested.</p>
