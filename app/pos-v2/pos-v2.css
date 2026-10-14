@@ -87,3 +87,17 @@
 .posv2-live-grid select{border:1px solid #d9c9b4;padding:12px;border-radius:7px;background:#fffdfa;color:#342920;min-width:0}
 .posv2-live-grid .posv2-form label{min-width:0}
 @media(max-width:850px){.posv2-live-grid{grid-template-columns:1fr}}
+
+.posv2-admin-pair{padding:12px 2px 18px;max-width:100%;overflow-wrap:anywhere}
+.posv2-admin-pair .posv2-code{padding:15px;margin-top:12px}
+.posv2-admin-pair .posv2-code p{color:#846d55;font-size:12px;line-height:1.7}
+.posv2-admin-pair .posv2-code a{font-weight:800;color:#795538;font-size:12px}
+.posv2-error{color:#a33c27!important;font-size:12px;font-weight:700}
+.posv2-danger{background:#fff0e7!important;border:1px solid #e2b7a0!important;color:#a04430!important;font-size:11px!important;padding:9px 12px!important;border-radius:7px!important;white-space:nowrap}
+.posv2-staff-security{border-bottom:1px solid #e9ddcc;padding-bottom:15px}
+.posv2-staff-security>.posv2-row{border-bottom:0}
+.posv2-staff-security form{max-width:100%}
+.posv2-gate .posv2-form{align-items:stretch}
+.posv2-gate .posv2-form label{max-width:100%;min-width:190px}
+.posv2-gate .posv2-form select,.posv2-gate .posv2-form input{width:100%;max-width:100%}
+@media(max-width:600px){.posv2-staff-security>.posv2-row form{width:100%}.posv2-gate .posv2-form{display:flex;flex-direction:column;align-items:stretch}}
