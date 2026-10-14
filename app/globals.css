@@ -127,3 +127,52 @@ html,body{max-width:100%;overflow-x:clip}
   .section-heading h2,.access-section h2{font-size:32px}
   .preview-ribbon{font-size:7px;letter-spacing:.3px}
 }
+
+/* POS V2 operator onboarding preview — brown-and-gold MARIZ style */
+.pos-preview-page{padding-top:48px}
+.pos-v2-page-head{display:flex;align-items:center;justify-content:space-between;gap:22px;margin-bottom:28px;flex-wrap:wrap;min-width:0}
+.pos-v2-page-head h1{font-size:clamp(30px,5vw,53px);letter-spacing:-1.7px;line-height:1.1;margin:8px 0;color:#34271c}
+.pos-v2-page-head p{color:#786653;line-height:1.6;font-size:13px;max-width:680px}
+.pos-v2-app{background:#fffcf8;border:1px solid #dfd0b8;border-radius:14px;overflow:hidden;min-width:0}
+.pos-v2-banner{background:#29251f;color:#e3c48e;padding:13px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center;font-size:10px;letter-spacing:.4px;flex-wrap:wrap}
+.pos-v2-banner span{color:#d5c9b9;font-size:10px}
+.pos-v2-switch{display:flex;align-items:center;gap:9px;border-bottom:1px solid #e3d6c7;padding:14px 19px;background:#f8f1e8;flex-wrap:wrap}
+.pos-v2-switch button{border:0;background:transparent;border-radius:8px;padding:11px 15px;font-size:12px;color:#796754;font-weight:700}
+.pos-v2-switch button.on{color:#fff;background:#785437}
+.pos-v2-switch button.reset{margin-left:auto;color:#785437;border:1px solid #d6c0a6}
+.pos-v2-two,.pos-v2-terminal-layout{display:grid;grid-template-columns:minmax(215px,30%) minmax(0,1fr);min-width:0;align-items:stretch}
+.pos-v2-sidebar{padding:30px 23px;background:#f4ebe0;border-right:1px solid #e3d3bd;min-width:0}
+.pos-v2-sidebar h2{font-size:clamp(22px,3vw,30px);line-height:1.15;letter-spacing:-.7px;margin:12px 0 15px}
+.pos-v2-sidebar p{font-size:13px;line-height:1.75;color:#867462}
+.pos-v2-progress{display:flex;flex-direction:column;gap:16px;margin:28px 0}
+.progress-item{display:flex;align-items:center;gap:12px;font-size:12px}
+.progress-item>span{border:1px solid #b7a087;border-radius:50%;width:29px;height:29px;display:grid;place-items:center;font-weight:700;flex-shrink:0}
+.progress-item>span.ready{background:#785437;border-color:#785437;color:#fff}
+.pos-v2-note{padding:15px;border:1px solid #ddc8a8;border-radius:9px;color:#6c5337;font-size:11px;line-height:1.7;background:#fff9ef}
+.pos-v2-settings{min-width:0;padding:22px;display:flex;flex-direction:column;gap:15px}
+.pos-v2-panel{border:1px solid #e5d8c7;background:#fff;border-radius:10px;padding:21px;min-width:0}
+.pos-v2-panel p,.pos-v2-panel>small{color:#8b7762;font-size:11px;line-height:1.7}
+.pos-v2-section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:17px;flex-wrap:wrap}
+.pos-v2-section-head h3{margin:6px 0 0;font-size:20px;letter-spacing:-.4px;color:#443222}
+.pos-v2-status{background:#f5e1cf;color:#795c3a;border-radius:99px;padding:8px 13px;font-size:10px;font-weight:800;display:inline-block}
+.pos-v2-status.ready{background:#e6f0df;color:#486a35}
+.pos-v2-inline{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:14px}
+.pos-v2-inline label,.pos-v2-login-card label{flex:1;min-width:155px;display:flex;flex-direction:column;gap:8px;color:#68523e;font-size:11px;font-weight:800}
+.pos-v2-inline input,.pos-v2-inline select,.pos-v2-login-card input,.pos-v2-login-card select{background:#fcfaf7;border:1px solid #ddcdb8;border-radius:8px;padding:12px;color:#332719;width:100%;max-width:100%;font-size:13px}
+.pos-v2-inline .button{min-height:43px;padding:12px 14px;font-size:11px}
+.pos-v2-staff{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.pos-v2-person{border:1px solid #e7dbc9;padding:10px 13px;border-radius:8px;display:flex;align-items:center;gap:8px;font-size:11px}
+.pos-v2-person>small{color:#a28a72}
+.pos-v2-avatar{width:26px;height:26px;background:#e2d0b6;color:#573b22;border-radius:50%;display:grid;place-items:center;font-weight:800}
+.pos-v2-feedback{padding:12px 15px;border-radius:8px;background:#e8f0dd;color:#486632;font-size:12px;line-height:1.6}
+.pos-v2-terminal-layout{min-height:470px}
+.pos-v2-terminal-layout .pos-v2-sidebar .button{margin-top:30px}
+.pos-v2-login-card{width:min(100%,390px);margin:55px auto;padding:25px;border:1px solid #e3d3c0;border-radius:14px;background:#fff;display:flex;flex-direction:column;gap:17px;box-shadow:0 9px 40px #533b2310}
+.pos-v2-login-card h2{font-size:29px;letter-spacing:-.7px;margin:0;color:#463220}
+.pos-v2-login-card label{min-width:0}
+.pos-v2-warning{padding:14px;background:#fff3e5;border:1px solid #f0d8ac;border-radius:7px;color:#765a39;line-height:1.65;font-size:11px}
+.pos-v2-textlink{border:0;background:transparent;color:#805f3c;text-decoration:underline;font-size:11px;font-weight:700}
+.pos-v2-help{font-size:12px;color:#856e56;line-height:1.7}
+.pos-v2-foot{padding:15px 20px;background:#f3e9da;border-top:1px solid #e2d2bb;font-size:9px;letter-spacing:.8px;font-weight:800;color:#896c4d;text-align:center}
+@media(max-width:720px){.pos-v2-two,.pos-v2-terminal-layout{grid-template-columns:minmax(0,1fr)}.pos-v2-sidebar{border-right:0;border-bottom:1px solid #e3d3bd;padding:20px}.pos-v2-progress{flex-direction:row;flex-wrap:wrap;gap:10px}.progress-item{font-size:10px}.pos-v2-settings{padding:14px}.pos-v2-panel{padding:16px}.pos-v2-login-card{margin:18px auto}}
+@media(max-width:350px){.pos-v2-switch{padding:10px;gap:5px}.pos-v2-switch button{padding:10px 7px;font-size:11px}.pos-v2-switch button.reset{margin-left:0}.pos-v2-inline label{min-width:0;width:100%}.pos-v2-inline{display:block}.pos-v2-inline .button{margin-top:11px}.pos-v2-page-head h1{font-size:29px}}
