@@ -44,3 +44,29 @@ body{background:#faf7f1;color:#31281f}
 .preview-ribbon{background:#29251f;color:#e0c394}
 .status-dot{background:#bd975e;box-shadow:0 0 0 3px #bd975e22}
 @media(max-width:780px){.product-grid,.custom-section .product-grid{grid-template-columns:1fr}}
+
+/* Public navigation: retained Products menu and MARIZ CO registration gateway. */
+.brand-logo{width:74px;height:53px;object-fit:contain;flex-shrink:0}
+.footer .brand-logo{width:85px;height:63px}
+.products-menu{position:relative;display:block;font-size:13px;color:#677978;font-weight:700}
+.products-menu summary{display:flex;align-items:center;gap:9px;cursor:pointer;padding:30px 0;border-bottom:2px solid transparent;list-style:none;white-space:nowrap}
+.products-menu summary::-webkit-details-marker{display:none}
+.products-menu[open] summary,.products-menu.nav-active summary{color:#785437;border-bottom-color:#a98647}
+.products-menu summary span{font-size:16px;line-height:1}
+.products-menu-panel{position:absolute;top:calc(100% + 7px);left:-27px;min-width:285px;padding:7px;background:#fffcf8;border:1px solid #e4d6c4;border-radius:11px;box-shadow:0 14px 35px #29251f26;z-index:30}
+.products-menu-panel button{display:block;width:100%;text-align:left;border:0;border-bottom:0;background:transparent;border-radius:7px;color:#463326;padding:14px 17px;font-size:13px;white-space:normal}
+.products-menu-panel button:hover,.products-menu-panel button:focus-visible{background:#f3e8da;color:#634522}
+.products-menu-panel button strong,.products-menu-panel button small{display:block}
+.products-menu-panel button strong{font-size:13px;letter-spacing:0}
+.products-menu-panel button small{font-size:11px;color:#8c7256;line-height:1.5;font-weight:400;margin-top:5px}
+.nav-links>button,.nav-links>.products-menu{align-self:stretch}
+@media(max-width:780px){
+.site-header{height:auto;min-height:77px;flex-wrap:wrap;row-gap:0;padding:10px 20px 0}
+.brand{font-size:19px}
+.brand-logo{width:56px;height:47px}
+.nav-links{order:3;display:flex;width:100%;align-items:center;gap:26px;justify-content:flex-start;overflow:visible}
+.nav-links>button,.products-menu summary{padding:14px 0;font-size:12px}
+.products-menu-panel{top:100%;left:-45px;min-width:265px}
+.header-cta{font-size:11px;padding:11px}
+}
+@media(max-width:390px){.nav-links{gap:21px}.brand-logo{width:45px;height:40px}.brand{font-size:17px}.header-cta{font-size:10px;padding:10px}}
