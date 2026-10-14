@@ -1,24 +1,29 @@
 "use server";
 import {redirect} from "next/navigation";
-import {getNeonAuth,neonBackendConfigured,neonPublicSignupsEnabled} from "../../../lib/mariz/neon-auth-server";
-function go(message:string):never{redirect("/co/auth?message="+encodeURIComponent(message));}
-export async function signUp(form:FormData){
- if(!neonPublicSignupsEnabled())go("Registration is paused pending required Neon email-verification settings");
- const name=String(form.get("name")||"").trim(),email=String(form.get("email")||"").trim().toLowerCase(),password=String(form.get("password")||"");
- if(name.length<3||name.length>120||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||password.length<12||password.length>128)go("Enter your full name, email and a password of at least 12 characters");
- const {error}=await getNeonAuth().signUp.email({name,email,password});
- if(error)go("Account registration could not be completed");
- go("Check your email for verification instructions before continuing");
+import {neonAuth,neonEnabled,neonRegistrationEnabled} from "../../../lib/mariz/neon-server";
+
+function msg(value:string):never{redirect("/co/auth?message="+encodeURIComponent(value));}
+export async function signUp(form:FormData) {
+ if(!neonRegistrationEnabled())msg("MARIZ CO account registration is not open yet");
+ const name=String(form.get("name")||"").trim();
+ const email=String(form.get("email")||"").trim().toLowerCase();
+ const password=String(form.get("password")||"");
+ if(name.length<2||name.length>120||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||password.length<12||password.length>128)
+  msg("Enter your name, a valid email and a password of at least 12 characters");
+ const {error}=await neonAuth().signUp.email({name,email,password});
+ if(error)msg("Registration could not be completed. Review the details and retry.");
+ msg("Account requested. Complete email verification before accessing MARIZ CO.");
 }
-export async function signIn(form:FormData){
- if(!neonBackendConfigured())go("Company login is not yet enabled");
- const email=String(form.get("email")||"").trim().toLowerCase(),password=String(form.get("password")||"");
- if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||!password)go("Enter valid login credentials");
- const {error}=await getNeonAuth().signIn.email({email,password});
- if(error)go("Unable to sign in. Check your credentials and verify your email.");
+export async function signIn(form:FormData) {
+ if(!neonEnabled())msg("Secure sign-in is not enabled yet");
+ const email=String(form.get("email")||"").trim().toLowerCase();
+ const password=String(form.get("password")||"");
+ if(!email||!password)msg("Enter an email and password");
+ const {error}=await neonAuth().signIn.email({email,password});
+ if(error)msg("Sign-in failed. Check your credentials and verify your email.");
  redirect("/co/workspace");
 }
-export async function signOut(){
- if(neonBackendConfigured())await getNeonAuth().signOut();
+export async function signOut() {
+ if(neonEnabled())await neonAuth().signOut();
  redirect("/co/auth");
 }
