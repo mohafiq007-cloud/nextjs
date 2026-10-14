@@ -70,3 +70,60 @@ body{background:#faf7f1;color:#31281f}
 .header-cta{font-size:11px;padding:11px}
 }
 @media(max-width:390px){.nav-links{gap:21px}.brand-logo{width:45px;height:40px}.brand{font-size:17px}.header-cta{font-size:10px;padding:10px}}
+
+/* V2 mobile overflow repair: do not rely on browser zoom or wide desktop content. */
+html,body{max-width:100%;overflow-x:clip}
+.shell{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+.site-header{width:100%;min-width:0;max-width:100%;position:relative;z-index:40}
+.site-header .brand{min-width:0;max-width:100%;overflow:hidden}
+.site-header .brand>span{min-width:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.brand-logo{width:60px;height:50px;object-fit:contain;object-position:center;flex:0 0 60px}
+.site-header .header-cta{white-space:nowrap;flex-shrink:0}
+.nav-links{min-width:0;max-width:100%}
+.nav-links button,.nav-links summary{white-space:nowrap}
+.hero,.hero-content,.hero-visual,.section,.interior,.demo-section,.product-grid,.product-card,.content-panel,.window,.main-window{min-width:0;max-width:100%}
+.hero h1,.interior-head h1,.section-heading h2{overflow-wrap:break-word}
+.demo-layout{min-width:0}
+.preview-ribbon{padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100vw}
+@media(max-width:780px){
+  .site-header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 10px;align-items:center;padding:8px 14px 0}
+  .site-header .brand{grid-column:1;grid-row:1;font-size:18px;gap:6px}
+  .site-header .header-cta{grid-column:2;grid-row:1;padding:10px 11px;font-size:10px;gap:5px}
+  .site-header .nav-links{grid-column:1 / -1;grid-row:2;order:unset;gap:clamp(12px,5vw,24px);padding:0;display:flex;justify-content:flex-start}
+  .nav-links>button,.nav-links summary{padding:13px 0;font-size:12px}
+  .nav-links .products-menu{position:static}
+  .products-menu-panel{left:clamp(12px,10vw,54px);top:100%;width:min(285px,calc(100vw - 24px));min-width:0}
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .hero-content{padding:46px 18px 26px}
+  .hero h1{font-size:clamp(38px,10vw,58px);letter-spacing:-2px;line-height:1.06}
+  .hero-actions{margin:24px 0 28px;gap:8px}
+  .hero-actions .button{padding:12px 14px;gap:9px}
+  .hero-visual{padding:24px 18px;min-height:325px}
+  .main-window{width:100%;transform:none}
+  .floating-card{left:12px;bottom:8px;max-width:calc(100% - 24px)}
+  .window-header{font-size:8px;gap:4px;padding:0 9px;overflow:hidden}
+  .window-header>span:nth-child(2){overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .window-body{padding:16px}
+  .interior{padding:42px 16px 65px}
+  .interior-head h1{font-size:clamp(31px,8vw,51px);letter-spacing:-1.1px}
+  .two-col,.form-grid,.product-grid,.custom-section .product-grid{grid-template-columns:minmax(0,1fr)}
+  .footer{padding:25px 16px}
+}
+@media(max-width:360px){
+  .site-header{padding:8px 10px 0;gap:0 6px}
+  .site-header .brand{font-size:15px;letter-spacing:.5px}
+  .brand-logo{width:45px;height:39px;flex-basis:45px}
+  .brand-sub{font-size:6px;letter-spacing:.55px}
+  .site-header .header-cta{padding:9px;font-size:9px}
+  .nav-links{gap:12px}
+  .nav-links>button,.nav-links summary{font-size:11px}
+  .hero h1{font-size:clamp(35px,11vw,44px);letter-spacing:-1.5px}
+  .eyebrow{font-size:9px;letter-spacing:1px}
+  .main-window{box-shadow:none}
+  .workspace-top strong{font-size:16px}
+  .floating-card{position:relative;bottom:auto;left:auto;margin-top:10px}
+  .hero-visual{display:block;min-height:0}
+  .section{padding:45px 16px}
+  .section-heading h2,.access-section h2{font-size:32px}
+  .preview-ribbon{font-size:7px;letter-spacing:.3px}
+}
