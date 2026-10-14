@@ -68,3 +68,9 @@ test("website uses one canonical prepared POS demo, no duplicate home simulator"
  assert.equal(page.includes('section==="demo"'),false);
  assert.ok(page.includes('window.location.href = "/co/pos/preview"'));
 });
+
+test("POS tendering validates cent precision and customer phone",()=>{
+ const pos=fs.readFileSync(new URL("../app/pos-v2/pos-v2-demo.tsx",import.meta.url),"utf8");
+ assert.ok(pos.includes(String.raw`/^(0|[1-9][0-9]{0,6})(\.[0-9]{1,2})?$/`));
+ assert.ok(pos.includes(String.raw`/^\+?[0-9]{9,15}$/`));
+});
