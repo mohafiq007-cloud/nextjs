@@ -27,6 +27,14 @@ export default async function Workspace({ searchParams }: { searchParams: Promis
       .eq("organization_id",company.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
     if(data)appByOrg[company.id]=data;
   }
+  // Product access is distinct from free company registration and from the demo.
+  const activePosByOrg = new Set<string>();
+  const verifiedOrgIds=companies.filter(c=>c.verification_status==="verified").map(c=>c.id);
+  if(verifiedOrgIds.length){
+    const {data:activePos,error:posError}=await supabase.from("mariz_pos_workspaces")
+      .select("organization_id").in("organization_id",verifiedOrgIds).eq("status","active");
+    if(!posError)for(const row of activePos||[])activePosByOrg.add(row.organization_id);
+  }
   const {message}=await searchParams;
   return <main className="interior">
     <div className="interior-head"><span className="eyebrow">MARIZ CO / VERIFIED COMPANY GATEWAY</span><h1>Your company workspace.</h1><p>Free company registration. The prepared MARIZ POS demo unlocks after verification. Real product activation requires a separate commercial agreement.</p></div>
@@ -39,7 +47,10 @@ export default async function Workspace({ searchParams }: { searchParams: Promis
           <span className={"tag "+(c.verification_status==="verified"?"green":"amber")}>{c.verification_status}</span></div>
         {c.verification_status==="verified"?
           <div><p>Company KYB approved. Your prepared MARIZ POS demo is ready. MARIZ product activation is separate and chargeable only when explicitly accepted.</p>
-            <Link href="/" className="button button-primary">Explore MARIZ POS demo →</Link></div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:12}}>
+              <Link href="/co/pos/preview" className="button button-outline">Explore free MARIZ POS demo →</Link>
+              {activePosByOrg.has(c.id)&&<Link href={"/co/pos/"+c.id+"/backoffice"} className="button button-primary">Open MARIZ POS Back Office →</Link>}
+            </div></div>
         :<div>
           <p style={{color:"#667c72"}}>KYB application: <strong>{a?.status || "Not started"}</strong></p>
           {!a && <form action={startKyb}><input type="hidden" name="organization_id" value={c.id}/><button className="button button-primary">Start company verification →</button></form>}
