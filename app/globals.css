@@ -183,3 +183,27 @@ html,body{max-width:100%;overflow-x:clip}
 .pos-unpaired-card h1{font-size:clamp(28px,5vw,42px);letter-spacing:-1px;line-height:1.15;margin:16px 0;color:#392a20}
 .pos-unpaired-card p{font-size:13px;line-height:1.8;color:#75634f}
 .pos-unpaired-actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+
+
+/* 2026-10-14 logo policy: actual PNG from MARIZ Library, not clipped embedded SVG. */
+.site-header .brand{overflow:visible;max-width:100%;gap:9px}
+.site-header .brand-logo,.footer .brand-logo{width:76px;height:76px;object-fit:contain;object-position:center;flex:0 0 76px;border:0;border-radius:0;clip-path:none}
+.site-header .brand>span{min-width:0;max-width:160px;overflow:visible;text-overflow:clip}
+.footer .brand-logo{width:80px;height:80px;flex-basis:80px}
+.posv2-brand img{object-fit:contain;object-position:center;clip-path:none;border-radius:0}
+@media(max-width:780px){
+ .site-header{grid-template-columns:minmax(0,1fr) auto}
+ .site-header .brand-logo{width:68px;height:68px;flex-basis:68px}
+ .site-header .brand{min-width:0;font-size:17px;gap:7px}
+ .site-header .brand>span{min-width:0;max-width:140px;overflow:hidden;text-overflow:ellipsis}
+ .site-header .header-cta{max-width:135px;white-space:nowrap}
+ .site-header .nav-links{min-width:0;width:100%;overflow:visible}
+}
+@media(max-width:390px){
+ .site-header .brand-logo{width:55px;height:55px;flex-basis:55px}
+ .site-header .brand{font-size:16px;gap:5px}
+ .site-header .brand>span{max-width:108px}
+ .site-header .header-cta{padding:10px 8px;max-width:125px}
+ .brand-sub{font-size:7px;letter-spacing:.5px}
+ .posv2-brand img{height:50px;width:50px;flex:0 0 50px}
+}

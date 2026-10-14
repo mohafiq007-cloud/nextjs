@@ -46,7 +46,7 @@ export default function PosV2Demo(){
  const tabs:Tab[]=["dashboard","outlets","staff","devices","menu","sales"];
  return <div className="posv2">
   <div className="posv2-warning">MARIZ POS V2 · ISOLATED SANDBOX · NO REAL LOGIN, PIN AUTHENTICATION, PAYMENTS OR PRINTING</div>
-  <header className="posv2-header"><div className="posv2-brand"><img src="/mariz-luxury-mark.svg" alt="MARIZ logo"/><span><strong>MARIZ POS</strong><small>Back Office &amp; Store Terminal Preview</small></span></div><div className="posv2-head-actions"><a href="/">← MARIZ HQ</a><button onClick={reset}>↺ Reset demo</button></div></header>
+  <header className="posv2-header"><div className="posv2-brand"><img src="/mariz-original-logo.png" alt="MARIZ logo"/><span><strong>MARIZ POS</strong><small>Back Office &amp; Store Terminal Preview</small></span></div><div className="posv2-head-actions"><a href="/">← MARIZ HQ</a><button onClick={reset}>↺ Reset demo</button></div></header>
   <nav className="posv2-switch"><button className={view==="office"?"selected":""} onClick={()=>setView("office")}>Back Office</button><button className={view==="terminal"?"selected":""} onClick={()=>setView("terminal")}>Store Terminal</button></nav>
   {notice&&<div className="posv2-notice" role="status">{notice}<button onClick={()=>setNotice("")}>×</button></div>}
   {view==="office"?<div className="posv2-office"><aside className="posv2-sidebar"><strong>Sample Café</strong><small>Company demo workspace</small>{tabs.map(t=><button key={t} className={tab===t?"selected":""} onClick={()=>setTab(t)}>{t==="dashboard"?"▥":t==="outlets"?"⌂":t==="staff"?"◎":t==="devices"?"▣":t==="menu"?"☷":"◷"} &nbsp; {t[0].toUpperCase()+t.slice(1)}</button>)}</aside>
