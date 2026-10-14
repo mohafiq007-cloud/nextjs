@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { marizBackendConfigured, marizServerClient } from "../../../lib/mariz/supabase-server";
+import { marizBackendConfigured, marizServerClient } from "../../../../lib/mariz/supabase-server";
 
 export const dynamic="force-dynamic";
 export const metadata={title:"MARIZ POS | Back Office",robots:{index:false,follow:false}};
