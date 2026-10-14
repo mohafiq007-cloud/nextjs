@@ -176,3 +176,10 @@ html,body{max-width:100%;overflow-x:clip}
 .pos-v2-foot{padding:15px 20px;background:#f3e9da;border-top:1px solid #e2d2bb;font-size:9px;letter-spacing:.8px;font-weight:800;color:#896c4d;text-align:center}
 @media(max-width:720px){.pos-v2-two,.pos-v2-terminal-layout{grid-template-columns:minmax(0,1fr)}.pos-v2-sidebar{border-right:0;border-bottom:1px solid #e3d3bd;padding:20px}.pos-v2-progress{flex-direction:row;flex-wrap:wrap;gap:10px}.progress-item{font-size:10px}.pos-v2-settings{padding:14px}.pos-v2-panel{padding:16px}.pos-v2-login-card{margin:18px auto}}
 @media(max-width:350px){.pos-v2-switch{padding:10px;gap:5px}.pos-v2-switch button{padding:10px 7px;font-size:11px}.pos-v2-switch button.reset{margin-left:0}.pos-v2-inline label{min-width:0;width:100%}.pos-v2-inline{display:block}.pos-v2-inline .button{margin-top:11px}.pos-v2-page-head h1{font-size:29px}}
+
+/* POS store-terminal default: cannot operate until securely provisioned. */
+.pos-unpaired{min-height:100dvh;background:radial-gradient(circle at 25% 10%,#5a412e,#29251f 70%);padding:28px 14px;display:grid;place-items:center}
+.pos-unpaired-card{width:min(100%,560px);padding:clamp(22px,5vw,44px);border-radius:17px;border:1px solid #9b7851;background:#fffbf4;box-shadow:0 20px 70px #0004}
+.pos-unpaired-card h1{font-size:clamp(28px,5vw,42px);letter-spacing:-1px;line-height:1.15;margin:16px 0;color:#392a20}
+.pos-unpaired-card p{font-size:13px;line-height:1.8;color:#75634f}
+.pos-unpaired-actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
