@@ -55,3 +55,16 @@ test("V2 sample POS is ready with a paired terminal and simulated only",()=>{
  assert.ok(pos.includes("NO REAL LOGIN"));
  assert.ok(pos.includes("setSales("));
 });
+
+test("sales and credit receipts are separate in POS demo",()=>{
+ const pos=fs.readFileSync(new URL("../app/pos-v2/pos-v2-demo.tsx",import.meta.url),"utf8");
+ assert.ok(pos.includes('payment==="Cash"?excess/100:0'));
+ assert.ok(pos.includes('payment==="Cash"?0:excess/100'));
+ assert.ok(pos.includes('credit:payment==="Cash"?0:excess/100'));
+ assert.ok(pos.includes('customerPhone'));
+});
+test("website uses one canonical prepared POS demo, no duplicate home simulator",()=>{
+ const page=fs.readFileSync(new URL("../app/page.tsx",import.meta.url),"utf8");
+ assert.equal(page.includes('section==="demo"'),false);
+ assert.ok(page.includes('window.location.href = "/co/pos/preview"'));
+});

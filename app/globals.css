@@ -207,3 +207,26 @@ html,body{max-width:100%;overflow-x:clip}
  .brand-sub{font-size:7px;letter-spacing:.5px}
  .posv2-brand img{height:50px;width:50px;flex:0 0 50px}
 }
+
+/* MARIZ brand: original complete PNG; mobile header shows its full artwork, not a clipped mark.
+ * Aspect adjustment crops only white padding inside the square PNG, never the logo artwork. */
+.site-header{min-height:105px;height:auto;overflow:visible}
+.site-header .brand{padding:0;max-width:190px;flex-shrink:0}
+.site-header .brand .brand-logo{width:156px;height:103px;flex:0 0 156px;object-fit:cover;object-position:center;clip-path:none}
+.site-header .nav-links{min-width:0}
+.site-header .header-cta{flex-shrink:0}
+.footer .brand-logo{width:115px;height:85px;object-fit:cover;object-position:center;flex:0 0 115px}
+@media (max-width:780px){
+ .site-header{padding:8px 18px 0;min-height:0;display:flex;flex-wrap:wrap;align-items:center;gap:0}
+ .site-header .brand{max-width:155px;min-width:0;flex:0 1 155px}
+ .site-header .brand .brand-logo{width:142px;height:96px;flex:0 1 142px;max-width:100%}
+ .site-header .header-cta{margin-left:auto;width:auto;max-width:140px}
+ .site-header .nav-links{order:3;flex:0 0 100%;width:100%;max-width:100%;gap:28px;overflow:visible}
+ .site-header .nav-links>button,.site-header .products-menu summary{padding:13px 0}
+}
+@media (max-width:390px){
+ .site-header .brand{flex-basis:136px}
+ .site-header .brand .brand-logo{width:130px;height:91px;flex-basis:130px}
+ .site-header .header-cta{max-width:133px;white-space:nowrap}
+ .site-header .nav-links{gap:19px}
+}
