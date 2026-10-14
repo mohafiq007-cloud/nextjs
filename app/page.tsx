@@ -31,7 +31,24 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"terminal" | "backoffice">("terminal");
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-  function openDemo(choice: Demo) { setDemo(choice); setSection("demo"); }
+  async function openDemo(choice: Demo) {
+    // Preview has no V2 backend; its sandboxed sample data is intentionally public only
+    // inside the access-protected preview deployment.
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      try {
+        const response = await fetch("/api/co/demo-access", { cache: "no-store", credentials: "same-origin" });
+        if (!response.ok) {
+          window.location.href = response.status === 401 ? "/co/auth" : "/co/workspace";
+          return;
+        }
+      } catch {
+        window.location.href = "/co/workspace";
+        return;
+      }
+    }
+    setDemo(choice);
+    setSection("demo");
+  }
   function addItem(name: string, price: number) {
     setPaid(false);
     setCart(current => {
@@ -58,7 +75,7 @@ export default function Home() {
         <button className="brand" onClick={() => setSection("home")} aria-label="MARIZ home"><span className="brand-emblem">M</span><span>MARIZ<span className="brand-sub">BUSINESS ECOSYSTEM</span></span></button>
         <nav className="nav-links" aria-label="Primary navigation">
           <button className={section === "home" ? "nav-active" : ""} onClick={() => setSection("home")}>Overview</button>
-          <button className={section === "demo" ? "nav-active" : ""} onClick={() => setSection("demo")}>Explore products</button>
+          <button className={section === "demo" ? "nav-active" : ""} onClick={() => openDemo("pos")}>Explore products</button>
           <button className={section === "company" ? "nav-active" : ""} onClick={() => setSection("company")}>MARIZ CO</button>
         </nav>
         <button className="button button-primary header-cta" onClick={() => { window.location.href = "/co/auth"; }}>Company access <span>↗</span></button>
