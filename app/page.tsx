@@ -69,7 +69,7 @@ export default function Home() {
     <div className="shell">
       <div className="preview-ribbon"><span className="status-dot" /> MARIZ HQ V2 · PRIVATE BUILD PREVIEW · SIMULATED DATA ONLY</div>
       <header className="site-header">
-        <button className="brand" onClick={() => setSection("home")} aria-label="MARIZ home"><img className="brand-logo" src="/mariz-mark.svg" alt="" /><span>MARIZ<span className="brand-sub">BUSINESS SOLUTIONS</span></span></button>
+        <button className="brand" onClick={() => setSection("home")} aria-label="MARIZ home"><img className="brand-logo" src="/mariz-luxury-mark.svg" alt="" /><span>MARIZ<span className="brand-sub">BUSINESS SOLUTIONS</span></span></button>
         <nav className="nav-links" aria-label="Primary navigation">
           <button className={section === "home" ? "nav-active" : ""} onClick={() => setSection("home")}>Overview</button>
           <details className={"products-menu " + ((section === "demo" || section === "custom") ? "nav-active" : "")}>
@@ -103,9 +103,9 @@ export default function Home() {
               <div className="window-header"><span className="window-dots"><i></i><i></i><i></i></span><span>MARIZ CO / COMPANY PROFILE</span><span>● VERIFIED</span></div>
               <div className="window-body">
                 <div className="workspace-top"><div><small>GOOD AFTERNOON</small><strong>Welcome to your workspace.</strong></div><span className="avatar">AC</span></div>
-                <div className="workspace-label">YOUR PRODUCTS</div>
+                <div className="workspace-label">AVAILABLE SOLUTIONS</div>
                 <div className="mini-product"><span className="mini-icon">▣</span><div><strong>MARIZ POS</strong><small>Demo ready to explore</small></div><span>↗</span></div>
-                <div className="mini-product"><span className="mini-icon violet">▤</span><div><strong>Custom Web Software</strong><small>Tailored to your workflow</small></div><span>↗</span></div>
+                <div className="mini-product"><span className="mini-icon violet">▤</span><div><strong>Custom Web Software</strong><small>Scope and quote on request</small></div><span>↗</span></div>
                 <div className="workspace-foot"><span>Company registration</span><strong>FREE FOREVER</strong></div>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
         <div className="custom-next"><strong>Need a tailored system?</strong><p>Custom engagements require a scoped quotation. This build does not yet accept enquiries or payments.</p><button className="button button-primary" onClick={() => {window.location.href="/co/auth"}}>Company registration / login →</button></div>
       </main>}
-      <footer className="footer"><div className="footer-brand"><img className="brand-logo" src="/mariz-mark.svg" alt="" /><div><strong>MARIZ</strong><small>POS & Custom Web Software</small></div></div><p>Build preview · Architecture V2 · No live registrations or payments</p><button onClick={()=>{setSection("home");window.scrollTo(0,0)}}>Back to top ↑</button></footer>
+      <footer className="footer"><div className="footer-brand"><img className="brand-logo" src="/mariz-luxury-mark.svg" alt="" /><div><strong>MARIZ</strong><small>POS & Custom Web Software</small></div></div><p>Build preview · Architecture V2 · No live registrations or payments</p><button onClick={()=>{setSection("home");window.scrollTo(0,0)}}>Back to top ↑</button></footer>
     </div>
   );
 }
