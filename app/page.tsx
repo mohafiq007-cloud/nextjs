@@ -61,7 +61,7 @@ export default function Home() {
           <button className={section === "demo" ? "nav-active" : ""} onClick={() => setSection("demo")}>Explore products</button>
           <button className={section === "company" ? "nav-active" : ""} onClick={() => setSection("company")}>MARIZ CO</button>
         </nav>
-        <button className="button button-primary header-cta" onClick={() => setSection("company")}>Company access <span>↗</span></button>
+        <button className="button button-primary header-cta" onClick={() => { window.location.href = "/co/auth"; }}>Company access <span>↗</span></button>
       </header>
 
       {section === "home" && <main>
@@ -102,7 +102,7 @@ export default function Home() {
           {step===2 && <div className="form-grid"><label>Entity type<select disabled defaultValue="company"><option value="company">Sdn Bhd / Berhad</option></select></label><label>Jurisdiction<input disabled value="Malaysia" readOnly /></label><label>Legal registered name<input disabled placeholder="Registered business name"/></label><label>Registration number<input disabled placeholder="SSM registration number"/></label><label className="full">Registered address<input disabled placeholder="Address as per registration records"/></label></div>}
           {step===3 && <div className="document-steps">{["Current SSM company/business profile","Evidence of representative authority (when required)","Registered company details match the official evidence"].map((x,i)=><div className="document-row" key={x}><span className="doc-number">0{i+1}</span><strong>{x}</strong><span className="tag">Required / conditional</span></div>)}<p className="footnote">Actual document upload is intentionally disabled until private storage, access controls and review workflows are connected to a new V2 database.</p></div>}
           {step===4 && <div className="approval-steps">{["Submit complete company application","Check authenticity, duplicates and applicant authority","MARIZ reviewer approves, requests corrections or rejects","Verified company accesses product demo center"].map((x,i)=><div className="approval-row" key={x}><span>{i+1}</span>{x}</div>)}</div>}
-          <div className="panel-footer"><span>🔒 No personal information is collected in this preview.</span><button className="button button-primary" onClick={()=>setStep(step===4?1:step+1)}>{step===4?"Review from start":"Next step"} →</button></div>
+          <div className="panel-footer"><span>🔒 No personal information is collected in this preview. <a href="/co/auth" style={{color:"#167761",fontWeight:700}}>Open secure company registration →</a></span><button className="button button-primary" onClick={()=>setStep(step===4?1:step+1)}>{step===4?"Review from start":"Next step"} →</button></div>
         </div>
       </div>
       </main>}
