@@ -16,6 +16,6 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: node --test tests/pos-policy.test.mjs
+      - run: node --test tests/*.test.mjs
       - run: npm run typecheck
       - run: npm run build
