@@ -6,10 +6,10 @@ export const neonConfigured = () => Boolean(
   process.env.NEON_AUTH_BASE_URL &&
   process.env.NEON_AUTH_COOKIE_SECRET &&
   process.env.NEON_AUTH_COOKIE_SECRET.length >= 32 &&
-  process.env.NEON_DATABASE_URL
+  process.env.MARIZ_NEON_DATABASE_URL
 );
 export const neonEnabled = () => neonConfigured() && process.env.NEON_V2_ENABLED === "true";
-export const neonRegistrationEnabled = () => neonEnabled() && process.env.NEON_PUBLIC_REGISTRATION_ENABLED === "true";
+export const neonRegistrationEnabled = () => neonEnabled() && process.env.MARIZ_CO_PUBLIC_SIGNUP_ENABLED === "true" && process.env.MARIZ_EMAIL_VERIFICATION_ENFORCED === "true";
 
 export function neonAuth() {
   if (!neonEnabled()) throw new Error("MARIZ CO V2 Neon Auth is not active");
@@ -20,7 +20,12 @@ export function neonAuth() {
 }
 export function marizSql() {
   if (!neonEnabled()) throw new Error("MARIZ HQ V2 database is not enabled");
-  return neon(process.env.NEON_DATABASE_URL!);
+  const url=process.env.MARIZ_NEON_DATABASE_URL!;
+  const parsed=new URL(url);
+  if(parsed.pathname!=="/marizhq_v2"||parsed.username!=="mariz_v2_runtime"){
+    throw new Error("Only the isolated Neon marizhq_v2 database and limited runtime role are allowed");
+  }
+  return neon(url);
 }
 export type MarizCompany = {
   organization_id:string;legal_name:string;registration_no:string;entity_type:string;
