@@ -39,14 +39,11 @@ export async function currentVerifiedUser() {
 }
 export async function myCompanies(userId:string):Promise<MarizCompany[]> {
   const sql=marizSql();
+  // Read through a verified-user, organization-scoped SECURITY DEFINER function.
+  // The application runtime role never requires direct SELECT on KYB/Auth tables.
   const rows=await sql.query(
-    'SELECT c.organization_id,c.legal_name,c.registration_no,c.entity_type,c.verification_status, m.role AS member_role, '+
-    '(SELECT k.status FROM mariz_core.kyb_applications k WHERE k.organization_id=c.organization_id ORDER BY k.created_at DESC LIMIT 1) AS kyb_status, '+
-    '(SELECT e.status FROM mariz_core.product_entitlements e WHERE e.organization_id=c.organization_id AND e.product_code=$2 LIMIT 1) AS pos_status '+
-    'FROM mariz_core.company_profiles c JOIN neon_auth.member m ON m."organizationId"=c.organization_id '+
-    'JOIN neon_auth."user" u ON u.id=m."userId" WHERE m."userId"=$1::uuid AND u."emailVerified"=true '+
-    'ORDER BY c.created_at DESC LIMIT 50',
-    [userId,"pos"]
+    "SELECT * FROM mariz_core.my_company_profiles($1::uuid)",
+    [userId]
   );
   return rows as MarizCompany[];
 }
