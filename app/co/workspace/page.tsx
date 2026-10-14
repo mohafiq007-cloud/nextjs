@@ -29,7 +29,7 @@ export default async function Workspace({ searchParams }: { searchParams: Promis
   }
   const {message}=await searchParams;
   return <main className="interior">
-    <div className="interior-head"><span className="eyebrow">MARIZ CO / VERIFIED COMPANY GATEWAY</span><h1>Your company workspace.</h1><p>Free company registration. Prepared product demos unlock after verification. Real product activation requires a separate commercial agreement.</p></div>
+    <div className="interior-head"><span className="eyebrow">MARIZ CO / VERIFIED COMPANY GATEWAY</span><h1>Your company workspace.</h1><p>Free company registration. The prepared MARIZ POS demo unlocks after verification. Real product activation requires a separate commercial agreement.</p></div>
     <form action={signOut} style={{marginBottom:22}}><button className="button button-outline">Sign out</button></form>
     {message&&<div className="notice" role="status">{message.slice(0,240)}</div>}
     {companies.map(c=>{
@@ -38,8 +38,8 @@ export default async function Workspace({ searchParams }: { searchParams: Promis
         <div className="panel-top"><div><span className="eyebrow">{c.entity_type.toUpperCase()} · {c.registration_no}</span><h2>{c.legal_name}</h2></div>
           <span className={"tag "+(c.verification_status==="verified"?"green":"amber")}>{c.verification_status}</span></div>
         {c.verification_status==="verified"?
-          <div><p>Company KYB approved. Your prepared demos are ready. MARIZ product activation is separate and chargeable only when explicitly accepted.</p>
-            <Link href="/" className="button button-primary">Explore prepared demos →</Link></div>
+          <div><p>Company KYB approved. Your prepared MARIZ POS demo is ready. MARIZ product activation is separate and chargeable only when explicitly accepted.</p>
+            <Link href="/" className="button button-primary">Explore MARIZ POS demo →</Link></div>
         :<div>
           <p style={{color:"#667c72"}}>KYB application: <strong>{a?.status || "Not started"}</strong></p>
           {!a && <form action={startKyb}><input type="hidden" name="organization_id" value={c.id}/><button className="button button-primary">Start company verification →</button></form>}
