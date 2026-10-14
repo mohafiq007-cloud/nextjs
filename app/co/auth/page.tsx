@@ -1,26 +1,31 @@
 import Link from "next/link";
 import {signIn,signUp} from "./actions";
-import {neonBackendConfigured,neonPublicSignupsEnabled} from "../../../lib/mariz/neon-auth-server";
+import {neonEnabled,neonRegistrationEnabled} from "../../../lib/mariz/neon-server";
 export const dynamic="force-dynamic";
 export default async function CompanyAccess({searchParams}:{searchParams:Promise<{message?:string}>}){
- const {message}=await searchParams,loginEnabled=neonBackendConfigured(),signupEnabled=neonPublicSignupsEnabled();
+ const {message}=await searchParams;
+ const enabled=neonEnabled(),register=neonRegistrationEnabled();
  return <main className="interior">
-  <div className="interior-head"><span className="eyebrow">MARIZ CO / COMPANY GATEWAY</span><h1>Your company starts here.</h1><p>MARIZ CO is free company registration, verification and onboarding. Explore the prepared MARIZ POS demo after approval; only live product activation is chargeable.</p></div>
-  {message&&<div className="notice" role="status">{message.slice(0,240)}</div>}
-  {!loginEnabled&&<div className="notice" role="status">Neon Auth is not connected to this preview. Registration and login are disabled.</div>}
-  {loginEnabled&&!signupEnabled&&<div className="notice" role="status">New registration is paused until Neon's verified-email policy has been confirmed.</div>}
-  <div className="two-col" style={{gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,320px),1fr))"}}>
-   <section className="content-panel"><h2 style={{fontSize:25}}>Create representative account</h2><form action={signUp} className="form-grid" style={{gridTemplateColumns:"1fr"}}>
-    <label>Full name<input name="name" autoComplete="name" required disabled={!signupEnabled} minLength={3} maxLength={120}/></label>
-    <label>Email<input name="email" type="email" autoComplete="email" required disabled={!signupEnabled}/></label>
-    <label>Password (12+ characters)<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={128} disabled={!signupEnabled}/></label>
-    <button className="button button-primary" disabled={!signupEnabled}>Register free →</button>
-   </form><p className="footnote">Company KYB follows email verification. No payment method or trial timer.</p></section>
-   <section className="content-panel"><h2 style={{fontSize:25}}>Existing account</h2><form action={signIn} className="form-grid" style={{gridTemplateColumns:"1fr"}}>
-    <label>Email<input name="email" type="email" autoComplete="email" required disabled={!loginEnabled}/></label>
-    <label>Password<input name="password" type="password" autoComplete="current-password" required disabled={!loginEnabled}/></label>
-    <button className="button button-primary" disabled={!loginEnabled}>Sign in →</button>
-   </form><p className="footnote">MARIZ CO is your company gateway, not a paid software product.</p></section>
-  </div><p style={{marginTop:24}}><Link href="/">← MARIZ Homepage</Link></p>
- </main>;
+ <div className="interior-head"><span className="eyebrow">MARIZ CO / COMPANY GATEWAY</span>
+  <h1>Your company starts here.</h1>
+  <p>Register your company for free. Verify your email address and submit official company documentation for MARIZ review. Paid products activate only when explicitly selected.</p></div>
+ {message&&<p className="notice" role="status">{message.slice(0,240)}</p>}
+ {!enabled&&<p className="notice" role="status">Private V2 integration preview: real sign-in and onboarding are disabled pending security validation.</p>}
+ <div className="two-col" style={{gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,320px),1fr))"}}>
+  <section className="content-panel"><h2>Create a MARIZ CO account</h2>
+   <form action={signUp} className="form-grid" style={{gridTemplateColumns:"1fr"}}>
+    <label>Representative full name<input name="name" required minLength={2} maxLength={120} disabled={!register} placeholder="As per official records"/></label>
+    <label>Business email<input name="email" type="email" required autoComplete="email" disabled={!register} placeholder="you@company.com"/></label>
+    <label>Password (12+ characters)<input name="password" type="password" minLength={12} maxLength={128} required autoComplete="new-password" disabled={!register}/></label>
+    <button className="button button-primary" disabled={!register}>Register for free →</button>
+   </form>
+   <p className="footnote">No credit card, no free trial and no automatic product activation. All companies require verification.</p></section>
+  <section className="content-panel"><h2>Company login</h2>
+   <form action={signIn} className="form-grid" style={{gridTemplateColumns:"1fr"}}>
+    <label>Email<input name="email" type="email" required autoComplete="email" disabled={!enabled}/></label>
+    <label>Password<input name="password" type="password" required autoComplete="current-password" disabled={!enabled}/></label>
+    <button className="button button-primary" disabled={!enabled}>Sign in →</button>
+   </form>
+   <p className="footnote">MARIZ CO is the organization platform. MARIZ POS and Custom Web Software are the available offerings.</p></section>
+ </div><p style={{marginTop:25}}><Link href="/">← Return to MARIZ</Link></p></main>;
 }
