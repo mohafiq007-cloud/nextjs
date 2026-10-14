@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { marizBackendConfigured,marizServerClient } from "../../../../../../lib/mariz/supabase-server";
 
 export const dynamic="force-dynamic";
@@ -12,7 +13,12 @@ export async function GET(request:NextRequest,{params}:{params:Promise<{id:strin
  // RPC enforces reviewer role and conflict-of-interest separation, and writes an audit event.
  const {data:path,error}=await sb.rpc("mariz_authorize_document_view",{p_document:id});
  if(error||typeof path!=="string")return NextResponse.json({error:"Not permitted"},{status:403});
- const {data:signed,error:linkError}=await sb.storage.from("mariz-kyb-private").createSignedUrl(path,45);
+ const secret=process.env.SUPABASE_SERVICE_ROLE_KEY;
+ if(!secret) return NextResponse.json({error:"Document review service unavailable"},{status:503});
+ const storageAdmin=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,secret,{
+  auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+ });
+ const {data:signed,error:linkError}=await storageAdmin.storage.from("mariz-kyb-private").createSignedUrl(path,45);
  if(linkError||!signed?.signedUrl)return NextResponse.json({error:"Unable to open document"},{status:500});
  return NextResponse.redirect(signed.signedUrl,{headers:{"Cache-Control":"no-store, private","Referrer-Policy":"no-referrer"}});
 }
