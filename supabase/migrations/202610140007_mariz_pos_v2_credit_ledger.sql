@@ -11,6 +11,9 @@ create table public.mariz_pos_customers(
  unique(organization_id,phone_e164),
  unique(id,organization_id)
 );
+-- Payment references must be constrained to the SAME organization.
+alter table public.mariz_pos_payments
+ add constraint mariz_pos_payments_org_id_unique unique(id,organization_id);
 create table public.mariz_pos_credit_ledger(
  id uuid primary key default gen_random_uuid(),
  organization_id uuid not null,
@@ -24,7 +27,7 @@ create table public.mariz_pos_credit_ledger(
  created_at timestamptz not null default now(),
  foreign key(customer_id,organization_id) references public.mariz_pos_customers(id,organization_id),
  foreign key(source_sale_id,organization_id) references public.mariz_pos_sales(id,organization_id),
- foreign key(source_payment_id) references public.mariz_pos_payments(id),
+ foreign key(source_payment_id,organization_id) references public.mariz_pos_payments(id,organization_id),
  unique(organization_id,idempotency_key),
  check(
     (entry_type='credit_issued' and amount_minor>0) or

@@ -54,7 +54,7 @@ export default function PosV2Demo(){
   const receivedMinor=entered?Math.round(Number(entered)*100):totalMinor;
   if(receivedMinor<totalMinor){setNotice("Tendered amount is below the sale total. Complete payment before checkout.");return;}
   const excess=receivedMinor-totalMinor;
-  if(payment!=="Cash"&&excess>0&&(!customerName.trim()||! /^\+?[0-9]{9,15}$/.test(customerPhone.trim()))){
+  if(payment!=="Cash"&&excess>0&&(!customerName.trim()||!/^\+?[0-9]{9,15}$/.test(customerPhone.trim()))){
     setNotice("For non-cash overpayment, enter the customer name and phone number to record demo store credit.");return;
   }
   const e:Entry={id:sales.length+1,item:cart.map(c=>String(c.qty)+" × "+menu[c.index].name).join(", "),total,method:payment,user:activeStaff,
