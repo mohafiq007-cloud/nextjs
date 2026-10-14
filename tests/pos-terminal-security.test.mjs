@@ -56,7 +56,7 @@ test("Company Back Office activation remains separate from free demonstration",(
  assert.ok(page.includes('workspace.status!=="active"'));
  assert.ok(page.includes('["owner","admin"]'));
  assert.ok(workspace.includes('href="/co/pos/preview"'));
- assert.ok(workspace.includes("activePosByOrg.has(c.id)"));
+ assert.ok(workspace.includes('c.pos_status==="active"'));
 });
 test("Service role and PIN pepper stay server-only",()=>{
  const env=read(".env.example");
