@@ -37,9 +37,9 @@ export default async function AdminKyb({searchParams}:{searchParams:Promise<{not
     <h2>{orgMap.get(a.organization_id)?.legal_name || "Company"}</h2><small>{a.id}</small></div><span className="tag amber">{a.status}</span></div>
    <div style={{marginBottom:18}}><strong>Evidence files</strong>
     {docs.filter(d=>d.application_id===a.id).map(d=><div key={d.id} className="document-row">
-     <span>{d.document_type}</span><code style={{marginLeft:"auto",fontSize:10}}>Private: {d.id.slice(0,8)}</code>
+     <span>{d.document_type}</span><a href={"/api/admin/kyb/document/"+d.id} target="_blank" rel="noreferrer" style={{marginLeft:"auto",fontSize:11,color:"#167761",fontWeight:700}}>Open audited evidence ↗</a>
     </div>)}
-    <p className="footnote">Document bytes are private and require an authorized, audited reviewer-view action. This first review interface intentionally does not expose raw file URLs.</p>
+    <p className="footnote">Document bytes stay in private storage. Each reviewer link requires authentication, records an audit event and expires quickly.</p>
    </div>
    <strong style={{fontSize:14}}>Verification checks</strong>
    <div className="form-grid" style={{margin:"15px 0"}}>
