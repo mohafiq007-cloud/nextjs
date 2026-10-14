@@ -98,10 +98,10 @@ create table public.mariz_products (
  live_available boolean not null default false,
  created_at timestamptz not null default now()
 );
-insert into public.mariz_products (product_code,product_name,description) values
- ('pos','MARIZ POS','Store terminal and back-office operations'),
- ('events','MARIZ Events','Event registration and operational execution'),
- ('co','MARIZ CO','Company management tools');
+-- MARIZ CO is organization infrastructure, not a product. Custom software is quotation-led.
+insert into public.mariz_products (product_code,product_name,description,demo_available,live_available) values
+ ('pos','MARIZ POS','Store terminal and back-office operations',true,false),
+ ('custom_web','Custom Web Software','Bespoke hosted software scoped to each business',false,false);
 create table public.mariz_plan_versions (
  id uuid primary key default gen_random_uuid(),
  product_code text not null references public.mariz_products(product_code),
