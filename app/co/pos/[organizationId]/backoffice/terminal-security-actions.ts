@@ -38,3 +38,26 @@ export async function enrollPosStaffPin(form:FormData):Promise<void>{
  revalidatePath("/co/pos/"+org+"/backoffice");
  status("Staff PIN enrolled. Old staff terminal sessions were revoked.");
 }
+
+export async function revokePosDevice(form:FormData):Promise<void>{
+ const org=String(form.get("organization_id")||""),device=String(form.get("device_id")||"");
+ if(!uuidPattern.test(org)||!uuidPattern.test(device))redirect("/co/workspace");
+ const sb=await marizServerClient();
+ const {data:{user},error:authError}=await sb.auth.getUser();
+ if(authError||!user)redirect("/co/auth");
+ const {data,error}=await sb.rpc("mariz_pos_admin_revoke_device",{p_organization:org,p_device:device});
+ if(error||!data)redirect("/co/pos/"+org+"/backoffice?notice="+encodeURIComponent("Terminal revocation failed or was already complete"));
+ revalidatePath("/co/pos/"+org+"/backoffice");
+ redirect("/co/pos/"+org+"/backoffice?notice="+encodeURIComponent("Terminal revoked and all linked sessions invalidated"));
+}
+export async function suspendPosStaff(form:FormData):Promise<void>{
+ const org=String(form.get("organization_id")||""),staff=String(form.get("staff_id")||"");
+ if(!uuidPattern.test(org)||!uuidPattern.test(staff))redirect("/co/workspace");
+ const sb=await marizServerClient();
+ const {data:{user},error:authError}=await sb.auth.getUser();
+ if(authError||!user)redirect("/co/auth");
+ const {data,error}=await sb.rpc("mariz_pos_admin_suspend_staff",{p_organization:org,p_staff:staff});
+ if(error||!data)redirect("/co/pos/"+org+"/backoffice?notice="+encodeURIComponent("Staff suspension failed or was already complete"));
+ revalidatePath("/co/pos/"+org+"/backoffice");
+ redirect("/co/pos/"+org+"/backoffice?notice="+encodeURIComponent("Staff account suspended; linked sessions revoked"));
+}
