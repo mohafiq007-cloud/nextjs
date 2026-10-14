@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { marizBackendConfigured, marizServerClient } from "../../../../../lib/mariz/supabase-server";
 import { createPosOutlet, createPosStaff, createPosItem, createPosPendingDevice } from "./actions";
 import PairingAdminForm from "./pairing-admin-form";
-import { enrollPosStaffPin } from "./terminal-security-actions";
+import { enrollPosStaffPin,revokePosDevice,suspendPosStaff } from "./terminal-security-actions";
 import "../../../../pos-v2/pos-v2.css";
 
 export const dynamic="force-dynamic";
@@ -82,7 +82,9 @@ export default async function CompanyPOSBackOffice({
        <button className="posv2-primary">Create outlet</button></form></section>
      <section className="posv2-panel"><h2>Staff records</h2>
       {staff.map(s=><div className="posv2-staff-security" key={s.id}>
-       <div className="posv2-row"><strong>{String(s.staff_name)}</strong><small>{String(s.role)} · {String(s.status)}</small></div>
+       <div className="posv2-row"><strong>{String(s.staff_name)}</strong><small>{String(s.role)} · {String(s.status)}</small>
+        {s.status!=="suspended"&&<form action={suspendPosStaff}><input type="hidden" name="organization_id" value={orgId}/><input type="hidden" name="staff_id" value={String(s.id)}/><button className="posv2-danger" title="Immediately revoke staff terminal access">Suspend staff</button></form>}
+       </div>
        <form action={enrollPosStaffPin} className="posv2-form">
         <input type="hidden" name="organization_id" value={orgId}/>
         <input type="hidden" name="staff_id" value={String(s.id)}/>
@@ -104,7 +106,9 @@ export default async function CompanyPOSBackOffice({
        <button className="posv2-primary">Add item</button></form></section>
      <section className="posv2-panel"><h2>Terminal registry</h2>
       {devices.map(d=><div key={d.id} className="posv2-staff-security">
-        <div className="posv2-row"><strong>{String(d.display_name)}</strong><small>{String(d.status)}</small></div>
+        <div className="posv2-row"><strong>{String(d.display_name)}</strong><small>{String(d.status)}</small>
+          {d.status!=="revoked"&&<form action={revokePosDevice}><input type="hidden" name="organization_id" value={orgId}/><input type="hidden" name="device_id" value={String(d.id)}/><button className="posv2-danger" title="Immediately revoke terminal device credentials">Revoke</button></form>}
+        </div>
         {d.status==="pending"&&<PairingAdminForm orgId={orgId} deviceId={String(d.id)}/>}
        </div>)}
       <form action={createPosPendingDevice} className="posv2-form"><input type="hidden" name="organization_id" value={orgId}/>
