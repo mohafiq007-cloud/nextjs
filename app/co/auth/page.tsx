@@ -10,7 +10,7 @@ export default async function CompanyAccess({ searchParams }: {
   const enabled = marizBackendConfigured();
   return <main className="interior">
     <div className="interior-head"><span className="eyebrow">MARIZ CO / COMPANY ACCESS</span>
-      <h1>Start with your company.</h1><p>Registration is free. Once verified, every prepared product demonstration remains available without a trial clock.</p></div>
+      <h1>Start with your company.</h1><p>Registration is free. Once verified, the prepared MARIZ POS demonstration is available without a trial clock. MARIZ CO itself is an organization portal, not a paid software product.</p></div>
     {message && <div className="notice" role="status">{message.slice(0,240)}</div>}
     {!enabled && <div className="notice" role="status">Secure registration is disabled on this preview until a dedicated V2 database is commissioned. No personal information is being collected here.</div>}
     <div className="two-col" style={{gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,320px),1fr))"}}>
