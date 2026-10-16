@@ -2,7 +2,9 @@ import {createHash} from "node:crypto";
 import {NextResponse} from "next/server";
 import {billplzSandboxConfigured} from "../../../../../lib/mariz/billing/billplz";
 import {verifyBillplzSignature} from "../../../../../lib/mariz/billing/billplz-signature.mjs";
-import {marizSql,neonEnabled} from "../../../../../lib/mariz/neon-server";
+import {neonEnabled} from "../../../../../lib/mariz/neon-server";
+
+import {billingRuntimeConfigured,billingRuntimeSql} from "../../../../../lib/mariz/neon-runtime-server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,7 +16,7 @@ function reply(body:object,status:number) {
 export async function POST(request:Request) {
   // Fail closed: never accept callbacks on a staging or production endpoint
   // without explicit sandbox opt-in, complete credentials and Neon readiness.
-  if (!billplzSandboxConfigured() || !neonEnabled()) {
+  if (!billplzSandboxConfigured() || !neonEnabled() || !billingRuntimeConfigured()) {
     return reply({error:"billing_disabled"},503);
   }
   const contentType = request.headers.get("content-type")?.toLowerCase() || "";
@@ -42,6 +44,7 @@ export async function POST(request:Request) {
     !billId || !/^[a-zA-Z0-9_-]{1,64}$/.test(billId) ||
     !["paid","due","deleted"].includes(state) ||
     !["true","false"].includes(isPaid) ||
+    (isPaid === "true") !== (state === "paid") ||
     !/^\d{1,10}$/.test(amountRaw ?? "") ||
     fields.collection_id !== process.env.BILLPLZ_COLLECTION_ID
   ) return reply({error:"invalid_callback_fields"},400);
@@ -56,7 +59,7 @@ export async function POST(request:Request) {
   // Product entitlements are intentionally NOT changed by this webhook.
   const eventDigest = createHash("sha256").update(fields.x_signature).digest("hex");
   try {
-    const sql = marizSql();
+    const sql = billingRuntimeSql();
     const rows = await sql.query(
       "SELECT mariz_billing.record_billplz_callback($1,$2,$3,$4,$5) AS accepted",
       [billId,amountMinor,isPaid==="true",state,eventDigest]
