@@ -15,6 +15,42 @@ function bearerHeader(request) {
   return /^Bearer [A-Za-z0-9._~+/-]+=*$/.test(value) && value.length <= 12000 ? value : null;
 }
 
+// Read the actual streamed body size, not just the caller-controlled Content-Length.
+async function limitedJsonBody(request, maxBytes) {
+  if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
+    return { status: 415, error: "JSON content type required" };
+  }
+  const declared = Number(request.headers.get("content-length") ?? 0);
+  if (declared > maxBytes) return { status: 413, error: "Response is too large" };
+  if (!request.body) return { status: 400, error: "Expected JSON" };
+  const reader = request.body.getReader();
+  const chunks = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > maxBytes) {
+        await reader.cancel();
+        return { status: 413, error: "Response is too large" };
+      }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(length);
+    let position = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, position);
+      position += chunk.byteLength;
+    }
+    return { data: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) };
+  } catch {
+    return { status: 400, error: "Expected valid UTF-8 JSON" };
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 async function neonRpc(env, bearer, method, payload) {
   const endpoint = env.NEON_DATA_API_URL;
   if (!endpoint || !endpoint.startsWith("https://")) {
@@ -22,10 +58,12 @@ async function neonRpc(env, bearer, method, payload) {
   }
   const url = new URL(endpoint.replace(/\/+$/, "") + "/rpc/" + method);
   // This Worker only permits the configured Neon REST host.
-  if (!url.hostname.endsWith(".neon.tech")) {
+  if (!url.hostname.endsWith(".neon.tech") || url.username || url.password) {
     return json({ error: "Invalid data service configuration" }, 503);
   }
-  const response = await fetch(url, {
+  let response;
+  try {
+    response = await fetch(url, {
     method: "POST",
     headers: {
       authorization: bearer,
@@ -36,7 +74,10 @@ async function neonRpc(env, bearer, method, payload) {
     },
     body: JSON.stringify(payload),
     redirect: "error"
-  });
+    });
+  } catch {
+    return json({ error: "Learning service temporarily unavailable" }, 502);
+  }
   if (response.status === 401 || response.status === 403) {
     return json({ error: "Access denied or membership unavailable" }, response.status);
   }
@@ -63,10 +104,9 @@ export default {
         return neonRpc(env, auth, "api_learn_state", {});
       }
       if (url.pathname === "/api/attempt" && request.method === "POST") {
-        const length = Number(request.headers.get("content-length") ?? 0);
-        if (length > 10000) return json({ error: "Response is too large" }, 413);
-        let body;
-        try { body = await request.json(); } catch { return json({ error: "Expected JSON" }, 400); }
+        const parsed = await limitedJsonBody(request, 10000);
+        if (parsed.status) return json({ error: parsed.error }, parsed.status);
+        const body = parsed.data;
         if (!body || typeof body.scenarioId !== "string" || typeof body.response !== "string") {
           return json({ error: "Missing scenario or response" }, 400);
         }
