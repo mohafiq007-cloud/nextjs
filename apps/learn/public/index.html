@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f5">
+  <meta name="description" content="MARIZ Learn: Understand why. Learn without fear.">
+  <title>MARIZ Learn — Understand why</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="MARIZ Learn home"><span class="brand-mark">M<span>✦</span></span><span>MARIZ <b>Learn</b></span></a>
+    <p class="nav-label">MY LEARNING SPACE</p>
+    <nav class="navigation" aria-label="Learning navigation">
+      <a class="current" href="#welcome">⌂ <span>Overview</span></a>
+      <a href="#library">▦ <span>Explore library</span></a>
+      <a href="#lab">◎ <span>Practice lab</span></a>
+    </nav>
+    <div class="sidebar-bottom"><span class="small-chip">Private preview</span><p>Progress follows your account when secure member login launches. This preview does not save personal work.</p></div>
+  </aside>
+  <div class="content">
+    <header class="topbar"><a class="mobile-brand" href="/">MARIZ <b>Learn</b></a><div class="topright"><span class="status-dot"></span> Learning preview <span class="account-icon" aria-hidden="true">◯</span></div></header>
+    <main>
+      <section class="welcome" id="welcome">
+        <div class="welcome-copy">
+          <p class="eyebrow">LEARN · PLAY · WORK</p>
+          <h1>Curiosity has<br><em>no report card.</em></h1>
+          <p>Learn to observe, question, explain and understand. No grades. No leaderboard. No fear of getting it wrong.</p>
+          <a class="primary" href="#lab">Try a reasoning challenge <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true"><span class="orb orb-one"></span><span class="orb orb-two"></span><div class="art-card"><span class="art-icon">✦</span><span>What if we asked<br><strong>WHY?</strong></span></div><div class="art-tiny">QUESTION EVERYTHING. LEARN ANYTHING.</div></div>
+      </section>
+      <section class="journey" aria-label="Learning philosophy">
+        <div><span class="metric-icon">◉</span><strong>Follow your curiosity</strong><small>Start anywhere. Explore at your pace.</small></div>
+        <div><span class="metric-icon">⌁</span><strong>Understand the reasoning</strong><small>Not just the answer, but why it works.</small></div>
+        <div><span class="metric-icon">✧</span><strong>Grow without grades</strong><small>Questions and helpful feedback, not report cards.</small></div>
+      </section>
+      <section id="library" class="library">
+        <div class="section-heading"><div><p class="eyebrow">A LIBRARY BUILT FOR THINKERS</p><h2>Explore a new perspective.</h2></div><span class="subtext">Three sample labs · More subjects planned</span></div>
+        <div id="course-list" class="course-list" aria-live="polite"><p>Loading sample lessons…</p></div>
+      </section>
+      <section class="lab" id="lab" aria-labelledby="lab-title">
+        <div class="lab-head"><div><p class="eyebrow">INTERACTIVE LEARNING LAB</p><h2 id="lab-title">One situation. Many possibilities.</h2></div><span class="sample-tag">No scores</span></div>
+        <div class="exercise">
+          <div class="exercise-top"><span id="scenario-faculty" class="mini-label">Human intelligence</span><span>01 / Practice</span></div>
+          <h3 id="scenario-title">The quiet customer</h3>
+          <p id="scenario-setup" class="setup"></p>
+          <p id="scenario-prompt" class="question"></p>
+          <label for="learner-answer">Your interpretation</label>
+          <textarea id="learner-answer" rows="5" maxlength="2000" placeholder="What do you notice? What might be true? What remains uncertain?"></textarea>
+          <div class="exercise-actions"><span id="word-count">Nothing written yet. That's okay.</span><button id="reflect-btn" class="primary" type="button">Explore the reasoning →</button></div>
+          <div id="reflection" class="reflection" hidden tabindex="-1">
+            <span class="reflection-icon">✦</span><h4>Another way to think about it</h4><p id="reflection-body"></p>
+            <p class="next" id="reflection-next"></p>
+            <button id="retry-btn" type="button" class="text-btn">Revise my thinking ↗</button>
+          </div>
+        </div>
+      </section>
+      <section class="member"><div><p class="eyebrow">YOUR LEARNING JOURNEY</p><h2>Your growth belongs to you.</h2><p>When member login is verified, your learning history will be private, saved and ready whenever you return. One subscription will cover the standard library.</p></div><div class="member-note"><span>MEMBERSHIP PLANNED</span><strong>RM10 <small>/ month · proposed</small></strong><span>Billing is not open yet.</span></div></section>
+      <footer><span>MARIZ Learn · Learn without fear.</span><span>Preview only · No payments collected</span></footer>
+    </main>
+  </div>
+</div>
+</body>
+</html>
