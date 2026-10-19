@@ -1,19 +1,19 @@
-# MARIZ Learn — isolated Cloudflare-native foundation
+# MARIZ Learn V0.2 — isolated Cloudflare-native foundation
 
 **Goal:** learn.marizhq.com — Learn · Play · Work ecosystem, Learn vertical.
 
 ## Current deliverable
 - Standalone Cloudflare Worker + static mobile-first learning preview (does not affect HQ/POS/Arcade).
-- Public, curated Observation, Finance and Design reasoning scenarios with non-graded reflection.
+- Nine public, curated Observation, Finance and Design reasoning scenarios with non-graded reflection.
 - Fail-closed learner API scaffold; NO false sign-in, no public payments, no mocked persistent user account.
-- Database migration in marizhq_v2 / separate mariz_learn schema, audited entitlement boundary.
+- Two review-first database migrations in marizhq_v2 / separate mariz_learn schema, audited entitlement boundary.
 - All course library access must be covered by one membership; proposed RM10/month. No one-time purchases.
 
 ## Why membership is not live
 HQ Neon Auth exists but public verified signup and the deployed app integration remain disabled/unverified. Billplz is a separate project and no webhook is trusted yet. Do not open learner signups, persist learner answers, expose paid lessons, or accept money until the acceptance gates below are complete.
 
 ## Development
-From apps/learn run npm install, then npm test, then npm run dev.
+From apps/learn run npm install, then npm run check, then npm run dev.
 Cloudflare deployment: wrangler deploy from apps/learn, after review. Link custom domain learn.marizhq.com only after staging tests and access controls. Never reuse/overwrite HQ Pages project configuration.
 
 ## Production secrets and switches
