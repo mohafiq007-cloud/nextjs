@@ -116,12 +116,12 @@
 
   function nextChallenge() {
     if (!selected || lessons.length === 0) return;
-    const current = lessons.findIndex((lesson) => lesson.id === selected.id);
-    const next = lessons[(current + 1) % lessons.length];
-    if (activeFaculty !== "All" && next.faculty !== activeFaculty) {
-      activeFaculty = "All";
-      applyFilter();
-    }
+    const pathLessons = activeFaculty === "All"
+      ? lessons
+      : lessons.filter((lesson) => lesson.faculty === activeFaculty);
+    if (!pathLessons.length) return;
+    const current = pathLessons.findIndex((lesson) => lesson.id === selected.id);
+    const next = pathLessons[(current + 1) % pathLessons.length];
     select(next);
     entry.focus({ preventScroll: true });
   }
