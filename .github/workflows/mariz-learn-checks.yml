@@ -1,0 +1,26 @@
+name: MARIZ Learn checks
+on:
+  push:
+    branches: [mariz-learn-foundation]
+    paths:
+      - "apps/learn/**"
+      - ".github/workflows/mariz-learn-checks.yml"
+  pull_request:
+    paths:
+      - "apps/learn/**"
+      - ".github/workflows/mariz-learn-checks.yml"
+jobs:
+  learn-checks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/learn
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: |
+          node --check src/worker.mjs
+          node --check src/learning.mjs
+          node --check public/app.js
+      - name: Run Node test suite
+        run: node --test tests/*.test.mjs
