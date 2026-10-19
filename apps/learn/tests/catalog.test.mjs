@@ -7,7 +7,7 @@ test("free preview catalog has nine distinct reasoning challenges", () => {
   const data = publicCatalog();
   assert.equal(data.mode, "preview");
   assert.equal(data.scenarios.length, 9);
-  assert.equal(new Set(data.scenarios.map((s) => s.id)).size, 3);
+  assert.equal(new Set(data.scenarios.map((s) => s.id)).size, 9);
   for (const s of data.scenarios) {
     assert.ok(s.prompt.length > 30);
     assert.ok(s.reflection.length > 40);
