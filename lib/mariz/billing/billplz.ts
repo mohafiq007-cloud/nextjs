@@ -12,6 +12,9 @@ export type BillplzBill = {
   paid: boolean;
   state: string;
   url: string;
+  reference_1?: string;
+  reference_2?: string;
+  paid_amount?: number;
 };
 
 export function billplzSandboxConfigured() {
@@ -31,7 +34,7 @@ export function billplzCallbackUrl() {
   if (!billplzSandboxConfigured()) throw new Error("Billplz sandbox integration is disabled");
   const url = new URL("/api/payments/billplz/callback", process.env.BILLPLZ_PUBLIC_BASE_URL!);
   const expected = new URL(process.env.BILLPLZ_PUBLIC_BASE_URL!);
-  if (expected.protocol !== "https:" || url.origin !== expected.origin) {
+  if (expected.protocol !== "https:" || expected.username || expected.password || expected.pathname !== "/" || expected.search || expected.hash || url.origin !== expected.origin) {
     throw new Error("Billplz public base URL must be HTTPS");
   }
   return url.toString();
@@ -42,9 +45,12 @@ export async function createBillplzSandboxBill(input: {
   customerName: string;
   customerEmail: string;
   description: string;
+  requestId: string;
+  organizationId: string;
 }): Promise<BillplzBill> {
   if (!billplzSandboxConfigured()) throw new Error("Billplz sandbox integration is disabled");
   if (
+    !/^[0-9a-f-]{36}$/i.test(input.requestId) || !/^[0-9a-f-]{36}$/i.test(input.organizationId) ||
     !Number.isSafeInteger(input.amountMinor) ||
     input.amountMinor < 100 ||
     input.amountMinor > 2_147_483_647 ||
@@ -63,6 +69,11 @@ export async function createBillplzSandboxBill(input: {
     amount: String(input.amountMinor),
     description: input.description.trim(),
     callback_url: callbackUrl,
+    reference_1_label: "MARIZ invoice",
+    reference_1: input.requestId,
+    reference_2_label: "MARIZ test company",
+    reference_2: input.organizationId,
+    deliver: "false",
   });
   const response = await fetch("https://www.billplz-sandbox.com/api/v3/bills", {
     method: "POST",
@@ -73,6 +84,7 @@ export async function createBillplzSandboxBill(input: {
     },
     body: form.toString(),
     cache: "no-store",
+    redirect: "error",
     signal: AbortSignal.timeout(10_000),
   });
   if (!response.ok) throw new Error("Billplz sandbox create bill request failed: HTTP " + response.status);
@@ -83,11 +95,26 @@ export async function createBillplzSandboxBill(input: {
     typeof bill.id !== "string" || !/^[a-zA-Z0-9_-]{1,64}$/.test(bill.id) ||
     bill.collection_id !== process.env.BILLPLZ_COLLECTION_ID ||
     bill.amount !== input.amountMinor ||
+    bill.reference_1 !== input.requestId || bill.reference_2 !== input.organizationId ||
     typeof bill.url !== "string"
   ) throw new Error("Unexpected Billplz bill response");
   const paymentUrl = new URL(bill.url);
-  if (paymentUrl.protocol !== "https:" || paymentUrl.hostname !== "www.billplz-sandbox.com") {
+  if (paymentUrl.protocol !== "https:" || paymentUrl.host !== "www.billplz-sandbox.com" || paymentUrl.username || paymentUrl.password || paymentUrl.pathname !== "/bills/"+bill.id || paymentUrl.search || paymentUrl.hash || typeof bill.paid !== "boolean" || !["due","paid","deleted"].includes(bill.state || "") || bill.paid !== (bill.state === "paid")) {
     throw new Error("Unexpected Billplz sandbox checkout destination");
   }
   return bill as BillplzBill;
+}
+
+export async function getBillplzSandboxBill(id:string):Promise<BillplzBill> {
+  if(!billplzSandboxConfigured() || !/^[a-zA-Z0-9_-]{1,64}$/.test(id)) throw new Error("Billplz sandbox unavailable");
+  const response=await fetch("https://www.billplz-sandbox.com/api/v3/bills/"+encodeURIComponent(id),{
+    headers:{Authorization:"Basic "+Buffer.from(process.env.BILLPLZ_SECRET_KEY!+":").toString("base64"),Accept:"application/json"},
+    redirect:"error",cache:"no-store",signal:AbortSignal.timeout(10_000)
+  });
+  if(!response.ok)throw new Error("Billplz sandbox read failed");
+  const bill=await response.json() as BillplzBill;
+  if(bill.id!==id || bill.collection_id!==process.env.BILLPLZ_COLLECTION_ID || !Number.isSafeInteger(bill.amount) || bill.amount<1 || typeof bill.paid!=="boolean" || !["due","paid","deleted"].includes(bill.state) || bill.paid!==(bill.state==="paid") || (bill.paid&&bill.paid_amount!==bill.amount)) throw new Error("Unexpected Billplz bill status");
+  const url=new URL(bill.url);
+  if(url.protocol!=="https:" || url.host!=="www.billplz-sandbox.com" || url.username || url.password || url.pathname!=="/bills/"+id || url.search || url.hash)throw new Error("Unexpected sandbox checkout destination");
+  return bill;
 }

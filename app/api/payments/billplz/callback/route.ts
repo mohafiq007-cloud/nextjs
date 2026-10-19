@@ -3,6 +3,7 @@ import {NextResponse} from "next/server";
 import {billplzSandboxConfigured} from "../../../../../lib/mariz/billing/billplz";
 import {verifyBillplzSignature} from "../../../../../lib/mariz/billing/billplz-signature.mjs";
 import {neonEnabled} from "../../../../../lib/mariz/neon-server";
+import {readBillingBody,BillingHttpError} from "../../../../../lib/mariz/billing/http.mjs";
 
 import {billingRuntimeConfigured,billingRuntimeSql} from "../../../../../lib/mariz/neon-runtime-server";
 
@@ -20,11 +21,11 @@ export async function POST(request:Request) {
     return reply({error:"billing_disabled"},503);
   }
   const contentType = request.headers.get("content-type")?.toLowerCase() || "";
-  if (!contentType.includes("application/x-www-form-urlencoded")) {
+  if (contentType.split(";")[0].trim() !== "application/x-www-form-urlencoded") {
     return reply({error:"unsupported_content_type"},415);
   }
-  const raw = await request.text();
-  if (raw.length > 16_384) return reply({error:"callback_too_large"},413);
+  let raw:string;
+  try{raw=await readBillingBody(request,16_384);}catch(e){return reply({error:"invalid_callback_body"},e instanceof BillingHttpError?e.status:400);}
   const incoming = new URLSearchParams(raw);
   const fields: Record<string,string> = Object.create(null) as Record<string,string>;
   for (const [key,value] of incoming) {
@@ -47,6 +48,9 @@ export async function POST(request:Request) {
     (isPaid === "true") !== (state === "paid") ||
     !/^\d{1,10}$/.test(amountRaw ?? "") ||
     fields.collection_id !== process.env.BILLPLZ_COLLECTION_ID
+    || (isPaid === "true" && fields.paid_amount !== amountRaw)
+    || (fields.transaction_status !== undefined && !["pending","completed","failed"].includes(fields.transaction_status))
+    || (isPaid === "true" && fields.transaction_status !== undefined && fields.transaction_status !== "completed")
   ) return reply({error:"invalid_callback_fields"},400);
 
   const amountMinor = Number(amountRaw);
@@ -57,12 +61,12 @@ export async function POST(request:Request) {
   // The signature has already been verified; its digest is an idempotency key.
   // A stored bill/amount must match before updating payment state.
   // Product entitlements are intentionally NOT changed by this webhook.
-  const eventDigest = createHash("sha256").update(fields.x_signature).digest("hex");
+  const eventDigest = createHash("sha256").update(fields.x_signature.toLowerCase()).digest("hex");
   try {
     const sql = billingRuntimeSql();
     const rows = await sql.query(
-      "SELECT mariz_billing.record_billplz_callback($1,$2,$3,$4,$5) AS accepted",
-      [billId,amountMinor,isPaid==="true",state,eventDigest]
+      "SELECT mariz_billing.record_billplz_callback_v2($1,$2,$3,$4,$5,$6) AS accepted",
+      [billId,amountMinor,isPaid==="true",state,eventDigest,fields.collection_id]
     ) as Array<{accepted:boolean}>;
     if (!rows[0]?.accepted) return reply({error:"bill_not_registered"},404);
     return reply({received:true},200);

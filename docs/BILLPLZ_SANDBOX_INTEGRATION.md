@@ -1,3 +1,7 @@
+# Current implementation and operations
+
+See [20 October sandbox runbook](BILLPLZ_SANDBOX_RUNBOOK_2026-10-20.md) for the implemented operator workflow, tested migration and current blockers. The original 16 October scaffold record below is historical; its account-creation and not-deployed/not-applied statements are superseded by the runbook and release report.
+
 # MARIZ HQ V2 — Billplz Sandbox Adapter (16 October 2026)
 
 ## Decision / scope

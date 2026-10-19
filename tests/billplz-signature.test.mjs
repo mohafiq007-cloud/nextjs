@@ -20,3 +20,7 @@ test("Billplz signature is insensitive to inbound key order", () => {
   const b = { id: "ABC123", amount: "100", paid: "true" };
   assert.equal(billplzSignatureHex(a, "test"), billplzSignatureHex(b, "test"));
 });
+
+test("official callback source-string ordering puts paid_amount before paidtrue",()=>{
+ assert.equal(billplzSignaturePayload({paid:"true",paid_amount:"100",amount:"100",state:"paid"}),"amount100|paid_amount100|paidtrue|statepaid");
+});
