@@ -58,3 +58,50 @@ test("unsupported API routes remain private when member service is disabled", as
   );
   assert.equal(response.status, 503);
 });
+
+test("member write payloads are size-limited even without Content-Length", async () => {
+  const payload = JSON.stringify({
+    scenarioId: "observe-cafe-01",
+    response: "x".repeat(11000)
+  });
+  const response = await worker.fetch(
+    new Request("https://learn.marizhq.com/api/attempt", {
+      method: "POST",
+      headers: {
+        authorization: "Bearer a.b.c",
+        "content-type": "application/json"
+      },
+      body: new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(payload));
+          controller.close();
+        }
+      }),
+      duplex: "half"
+    }),
+    { LEARN_API_ENABLED: "true" }
+  );
+  assert.equal(response.status, 413);
+});
+
+test("member writes reject unsupported content types", async () => {
+  const response = await worker.fetch(
+    new Request("https://learn.marizhq.com/api/attempt", {
+      method: "POST",
+      headers: { authorization: "Bearer a.b.c", "content-type": "text/plain" },
+      body: "{}"
+    }),
+    { LEARN_API_ENABLED: "true" }
+  );
+  assert.equal(response.status, 415);
+});
+
+test("member API cannot fall back to unconfigured data services", async () => {
+  const response = await worker.fetch(
+    new Request("https://learn.marizhq.com/api/state", {
+      headers: { authorization: "Bearer a.b.c" }
+    }),
+    { LEARN_API_ENABLED: "true" }
+  );
+  assert.equal(response.status, 503);
+});
