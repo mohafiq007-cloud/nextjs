@@ -10,6 +10,7 @@
   <script src="/app.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#library">Skip to learning library</a>
 <div class="layout">
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="MARIZ Learn home"><span class="brand-mark">M<span>✦</span></span><span>MARIZ <b>Learn</b></span></a>
@@ -39,7 +40,8 @@
         <div><span class="metric-icon">✧</span><strong>Grow without grades</strong><small>Questions and helpful feedback, not report cards.</small></div>
       </section>
       <section id="library" class="library">
-        <div class="section-heading"><div><p class="eyebrow">A LIBRARY BUILT FOR THINKERS</p><h2>Explore a new perspective.</h2></div><span class="subtext">Three sample labs · More subjects planned</span></div>
+        <div class="section-heading"><div><p class="eyebrow">A LIBRARY BUILT FOR THINKERS</p><h2>Explore a new perspective.</h2></div><span class="subtext">Nine sample challenges · Three learning paths</span></div>
+        <div id="faculty-filters" class="faculty-filters" role="group" aria-label="Filter sample lessons"></div>
         <div id="course-list" class="course-list" aria-live="polite"><p>Loading sample lessons…</p></div>
       </section>
       <section class="lab" id="lab" aria-labelledby="lab-title">
@@ -51,11 +53,13 @@
           <p id="scenario-prompt" class="question"></p>
           <label for="learner-answer">Your interpretation</label>
           <textarea id="learner-answer" rows="5" maxlength="2000" placeholder="What do you notice? What might be true? What remains uncertain?"></textarea>
-          <div class="exercise-actions"><span id="word-count">Nothing written yet. That's okay.</span><button id="reflect-btn" class="primary" type="button">Explore the reasoning →</button></div>
+          <div class="hint-panel"><button id="hint-btn" type="button" aria-expanded="false" aria-controls="hint-body">Need a thinking prompt? <span aria-hidden="true">＋</span></button><p id="hint-body" hidden></p></div>
+          <p class="privacy-note">This public preview does not send or save your answer. Your draft lasts only while this tab is open.</p>
+          <div class="exercise-actions"><span id="word-count" role="status" aria-live="polite">Nothing written yet. That's okay.</span><button id="reflect-btn" class="primary" type="button">Explore the reasoning →</button></div>
           <div id="reflection" class="reflection" hidden tabindex="-1">
             <span class="reflection-icon">✦</span><h4>Another way to think about it</h4><p id="reflection-body"></p>
             <p class="next" id="reflection-next"></p>
-            <button id="retry-btn" type="button" class="text-btn">Revise my thinking ↗</button>
+            <div class="reflection-actions"><button id="retry-btn" type="button" class="text-btn">Revise my thinking ↗</button><button id="next-btn" type="button" class="text-btn">Try another challenge →</button></div>
           </div>
         </div>
       </section>
