@@ -36,6 +36,8 @@ The former owner connection cannot SET ROLE to the limited login; no grant was e
 
 ## Sandbox acceptance gate
 
+The owner privately created `mohafiq007@gmail.com` on the isolated test branch. Console creation does not set a password or verify email. The branch-only `/co/auth/test-setup` page uses the installed Neon SDK and existing Auth proxy: email verification OTP, then a distinct password-reset OTP. The owner enters both codes and the new password privately. No account is registered by this page, no verification flag is changed through SQL, and it grants no billing permission. It returns 404 outside Vercel Preview / feature/billplz-sandbox-adapter or when Neon Auth is disabled. Public registration stays disabled. Remove the page after acceptance if no longer needed; its existing-account verification/recovery endpoints remain subject to Neon OTP controls.
+
 1. Configure missing sandbox secrets privately; confirm Auth/database endpoint alignment and restricted runtime readiness. Keep the flag false during configuration.
 2. Use a registered test organization and verified operator through existing Neon Auth; approve that specific organization in sandbox_organizations and configure the operator UUID. Never fabricate a production identity or turn on public company registration for this purpose.
 3. Verify provider callback reachability at the exact stable sandbox origin. A Vercel login redirect is not a functioning callback. A domain-only preview protection exception is suitable only after all private application routes are verified fail-closed; do not disable project-wide protection, add a paid plan or expose a project bypass secret.
