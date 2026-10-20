@@ -1,0 +1,19 @@
+name: MARIZ V2 runtime security
+on:
+  pull_request:
+    branches: [mariz-hq-v2-foundation, main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node --experimental-vm-modules --test tests/*.test.mjs
+      - run: npm run typecheck
+      - run: npm run build
