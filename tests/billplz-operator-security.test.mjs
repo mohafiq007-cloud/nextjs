@@ -5,6 +5,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import {stripTypeScriptTypes} from 'node:module';
 import * as http from '../lib/mariz/billing/http.mjs';
+import * as diagnostics from '../lib/mariz/neon-error-category.mjs';
 const userId='10000000-0000-4000-8000-000000000001',origin='https://sandbox.example.invalid';
 const input={organizationId:'20000000-0000-4000-8000-000000000001',idempotencyKey:'40000000-0000-4000-8000-000000000001',amountMinor:100,customerName:'Sandbox test',customerEmail:'test@example.invalid',description:'Test invoice'};
 async function route({enabled=true,user={id:userId},allow=userId,dbError=null}={},kind='invoices'){
@@ -16,6 +17,7 @@ async function route({enabled=true,user={id:userId},allow=userId,dbError=null}={
   else if(short.endsWith('/billing/service'))values={sandboxBillingDependencies:()=>({})};
   else if(short.endsWith('/billing/workflow.mjs'))values={issueSandboxInvoice:async()=>{mutations++;if(dbError)throw dbError;return{id:'test',payment_url:'https://www.billplz-sandbox.com/bills/test'};},reconcileSandboxInvoice:async()=>{mutations++;if(dbError)throw dbError;return{status:'paid'};}};
   else if(short.endsWith('/billing/http.mjs'))values=http;
+  else if(short.endsWith('/neon-error-category.mjs'))values=diagnostics;
   else if(file==='server-only')values={};
   else if(file==='next/server')values={NextResponse:{json:(body,options)=>Response.json(body,options)}};
   if(values){const m=new vm.SyntheticModule(Object.keys(values),function(){for(const[k,v]of Object.entries(values))this.setExport(k,v);},{context});cache.set(file,m);return m;}
@@ -31,4 +33,5 @@ test('operator cannot supply provider URL, tenant actor or callback destination'
 test('authorized operator reaches issuance and response never caches',async()=>{const h=await route();const r=await h.post(request());assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store');assert.equal(h.mutations,1);});
 test('database tenant denial is controlled and never leaks its exception',async()=>{const h=await route({dbError:{code:'42501',message:'PRIVATE CONNECTION'}});const r=await h.post(request());assert.equal(r.status,403);assert.ok(!(await r.text()).includes('PRIVATE'));});
 test('unknown errors return safe retryable diagnostics',async()=>{const h=await route({dbError:Error('PRIVATE CREDENTIAL')});const r=await h.post(request());assert.equal(r.status,503);assert.ok(!(await r.text()).includes('PRIVATE'));});
+test('operator receives a fixed database authentication category without credentials',async()=>{const h=await route({dbError:{code:'28P01',message:'PRIVATE CONNECTION PASSWORD'}});const r=await h.post(request());assert.equal(r.status,503);const body=await r.json();assert.equal(body.diagnostic,'database_authentication_failed');assert.ok(!JSON.stringify(body).includes('PRIVATE'));});
 test('streaming body limit rejects without reading an unbounded payload',async()=>{const h=await route();const r=await h.post(request({...input,description:'x'.repeat(9000)}));assert.equal(r.status,413);assert.equal(h.mutations,0);});
