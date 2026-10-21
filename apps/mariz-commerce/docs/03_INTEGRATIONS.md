@@ -49,3 +49,6 @@ Network timeout after provider booking, callback before redirect, duplicate call
 - https://developers.easyparcel.com/?c=Malaysia
 - https://api.easyparcel.com/
 - https://help.grab.com/merchant/en-sg/4404599730841
+
+## Merchant-owned WhatsApp Business (pending Meta onboarding)
+MARIZ Commerce will offer a **chat-link-only** option and, after Meta App Review/approval, **Embedded Signup** for merchant-controlled Cloud API access. Tenant credentials and permissions belong to HQ's connector registry, not the browser. No live Meta connection, automation, shared inbox or approved messaging account has been verified. See [09_WHATSAPP_BUSINESS_CONNECTOR.md](09_WHATSAPP_BUSINESS_CONNECTOR.md) for the user journey, versioned Meta account model, security/billing conditions and NO-GO tests. Merchant notifications must follow verified order/delivery events and explicit recipient consent; they cannot become payment or delivery truth.
