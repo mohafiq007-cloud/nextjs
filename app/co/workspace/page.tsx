@@ -4,6 +4,7 @@ import {createCompany,startKyb} from "./actions";
 import {signOut} from "../auth/actions";
 import {currentVerifiedUser,myCompanies,neonEnabled} from "../../../lib/mariz/neon-server";
 import {neonErrorCategory} from "../../../lib/mariz/neon-error-category.mjs";
+import KybPanel from './kyb-panel';
 export const dynamic="force-dynamic";
 export default async function Workspace({searchParams}:{searchParams:Promise<{notice?:string}>}){
  if(!neonEnabled())return <main className="interior"><h1>MARIZ CO Workspace</h1><p>The isolated Neon database exists. Real company onboarding is disabled until identity and security validation is complete.</p><Link href="/co/auth">Company access →</Link></main>;
@@ -29,7 +30,8 @@ export default async function Workspace({searchParams}:{searchParams:Promise<{no
      {c.pos_status==="active"&&<p>POS subscription active. Operational terminal commissioning is pending.</p>}</div>:
      <div><p>KYB application: <strong>{c.kyb_status||"Not started"}</strong></p>
      {!c.kyb_status&&<form action={startKyb}><input type="hidden" name="organization_id" value={c.organization_id}/><button className="button button-primary">Start company verification →</button></form>}
-     <p className="footnote">Official registration evidence and MARIZ approval are required. Document uploads are not live, and no product subscription has started.</p></div>}
+     {c.kyb_status&&<KybPanel organizationId={c.organization_id}/>}
+     <p className="footnote">Official registration evidence and MARIZ approval are required. No product subscription has started.</p></div>}
   </section>)}
   <section className="content-panel"><h2 style={{fontSize:25}}>Register another company</h2>
    <p className="footnote">Only register companies you are authorized to represent. SSM numbers are checked for duplicates.</p>
