@@ -52,7 +52,7 @@ test("unlisted RPC, opaque session tokens and error details fail closed", async 
 test("server-side onboarding never passes a caller-controlled actor or elevated SQL", () => {
   const source = fs.readFileSync(new URL("../app/co/workspace/actions.ts", import.meta.url),"utf8");
   const server = fs.readFileSync(new URL("../lib/mariz/neon-server.ts", import.meta.url),"utf8");
-  assert.ok(source.includes('coRpc<string>("api_register_company"'));
+  assert.ok(source.includes('registerCompanyRecoverably'));
   assert.ok(source.includes('coRpc<string>("api_start_kyb"'));
   assert.ok(!source.includes("marizSql()"));
   assert.ok(!source.includes('form.get("actor")'));
