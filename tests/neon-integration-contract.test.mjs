@@ -9,8 +9,9 @@ test("MARIZ CO uses official Neon authentication, never uses client-supplied act
  assert.ok(auth.includes("createNeonAuth"));
  assert.ok(auth.includes("getSession()"));
  assert.ok(create.includes("currentVerifiedUser()"));
- assert.ok(create.includes("organization.create"));
- assert.ok(create.includes("api_register_company"));
+ const recovery=get("lib/mariz/co-registration.mjs");
+ assert.ok(recovery.includes("organization.create"));
+ assert.ok(recovery.includes("api_register_company"));
  assert.ok(!create.includes("marizSql()"));
  assert.ok(!create.includes("form.get(\"actor\")"));
 });

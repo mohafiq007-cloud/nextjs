@@ -53,3 +53,11 @@ The existing CO login/registration UI and Neon database functions were created, 
 - Preview credentials, database owner role, and test data never bleed into production.
 
 **Handoff contract:** Codex owns test, hardening, reconciliation and deployment readiness. Do not merge or flip public signup until all gates pass.
+
+## Execution checkpoint — 21 October 2026
+
+Implemented on this existing recovery branch: actor/normalized-SSM-derived organization identity, safe retry after Auth create timeout or profile failure, concurrent-create arbitration through Auth's unique slug, and explicit six-digit Neon email verification/resend forms. Migration 007 makes identical profile replay idempotent, rejects conflicting details, serializes daily rate-limit checks and preserves verified administrator checks. Older random-slug orphan organizations still need operator reconciliation; none were deleted.
+
+Verified: Node 24.18.0, clean locked dependency installation, 133 tests using `node --experimental-vm-modules --test tests/*.test.mjs`, typecheck and production build. Recovery migration tested inside a rollback-only subtransaction on `small-cell-04853885 / br-empty-band-aoi1kzkc / marizhq_v2`: normalized replay yields one profile/audit; conflicting replay, foreign user and unverified user denied. Readback confirms original function restored and zero synthetic users retained. This is database-layer evidence, not an authenticated HTTP/JWT or real email E2E claim.
+
+Actual production still serves the separate Cloudflare CO holding page. Vercel alias resolves to older deployment `dpl_AFJkWc9QGAFauidEKYKeFfvQ5rPw`. Neon main readback still has verify-at-signup/signin false, require-email-verification true, shared SMTP and only the existing preview trusted origin. No settings or signup flags changed. Migration 007 is NOT applied to main or persisted on the test branch. KYB private uploads/reviewer, controlled OTP/session E2E, legacy orphan support recovery and production routing remain NO-GO gates. See the consolidated execution report for artifact hashes and current release state.

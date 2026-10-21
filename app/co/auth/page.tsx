@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {signIn,signUp} from "./actions";
+import {signIn,signUp,sendVerificationCode,verifyEmailCode} from "./actions";
 import {neonEnabled,neonRegistrationEnabled} from "../../../lib/mariz/neon-server";
 export const dynamic="force-dynamic";
 export default async function CompanyAccess({searchParams}:{searchParams:Promise<{message?:string}>}){
@@ -28,5 +28,17 @@ export default async function CompanyAccess({searchParams}:{searchParams:Promise
     <button className="button button-primary" disabled={!enabled}>Sign in →</button>
    </form>
    <p className="footnote">MARIZ CO is the organization platform. MARIZ POS and Custom Web Software are the available offerings.</p></section>
- </div><p style={{marginTop:25}}><Link href="/">← Return to MARIZ</Link></p></main>;
+ </div>
+ <section className="content-panel" style={{marginTop:22}}><h2>Verify your email</h2>
+  <p>Request a code for your MARIZ account, then enter the code from your email. Codes expire; do not share them.</p>
+  <form action={sendVerificationCode} className="form-grid">
+   <label>Account email<input name="email" type="email" required maxLength={254} autoComplete="email" disabled={!enabled}/></label>
+   <button className="button button-outline" disabled={!enabled}>Send or resend verification code</button>
+  </form>
+  <form action={verifyEmailCode} className="form-grid" style={{marginTop:16}}>
+   <label>Account email<input name="email" type="email" required maxLength={254} autoComplete="email" disabled={!enabled}/></label>
+   <label>Six-digit code<input name="otp" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} autoComplete="one-time-code" required disabled={!enabled}/></label>
+   <button className="button button-primary" disabled={!enabled}>Verify email</button>
+  </form>
+ </section><p style={{marginTop:25}}><Link href="/">← Return to MARIZ</Link></p></main>;
 }
