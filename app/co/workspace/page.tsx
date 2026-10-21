@@ -3,13 +3,15 @@ import {redirect} from "next/navigation";
 import {createCompany,startKyb} from "./actions";
 import {signOut} from "../auth/actions";
 import {currentVerifiedUser,myCompanies,neonEnabled} from "../../../lib/mariz/neon-server";
+import {neonErrorCategory} from "../../../lib/mariz/neon-error-category.mjs";
 export const dynamic="force-dynamic";
 export default async function Workspace({searchParams}:{searchParams:Promise<{notice?:string}>}){
  if(!neonEnabled())return <main className="interior"><h1>MARIZ CO Workspace</h1><p>The isolated Neon database exists. Real company onboarding is disabled until identity and security validation is complete.</p><Link href="/co/auth">Company access →</Link></main>;
  const user=await currentVerifiedUser();
  if(!user)redirect("/co/auth?message="+encodeURIComponent("Email verification is required"));
  let companies;
- try{companies=await myCompanies(user.id);}catch{
+ try{companies=await myCompanies(user.id);}catch(error){
+  console.error("MARIZ_CO_COMPANY_LOOKUP_FAILED",neonErrorCategory(error));
   return <main className="interior"><h1>Workspace unavailable</h1><p>Company records could not be securely retrieved. No changes were made.</p></main>;
  }
  const {notice}=await searchParams;
