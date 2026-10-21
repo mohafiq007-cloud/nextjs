@@ -7,6 +7,7 @@ const jwt = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYXV0aGVudGljYXRlZCJ9.signature";
 
 test("company Data API URL is pinned to the exact project and path", () => {
   assert.equal(validateNeonDataApiUrl(endpoint), endpoint);
+  assert.equal(validateNeonDataApiUrl(endpoint.replace('ep-twilight-lake-aomjxn05','ep-misty-mouse-aoq558cc')),endpoint.replace('ep-twilight-lake-aomjxn05','ep-misty-mouse-aoq558cc'));
   for (const invalid of [
     "http://ep-twilight-lake-aomjxn05.apirest.c-2.ap-southeast-1.aws.neon.tech/marizhq_v2/rest/v1",
     "https://attacker.example/marizhq_v2/rest/v1",

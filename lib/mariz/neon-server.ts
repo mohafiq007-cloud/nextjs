@@ -3,6 +3,7 @@ import {createNeonAuth} from "@neondatabase/auth/next/server";
 import {companyRuntimeConfigured, companyRuntimeSql} from "./neon-runtime-server";
 import {coDataApiConfigured, invokeCoRpc} from "./co-data-api";
 import type {CoRpcName} from "./co-data-api-request.mjs";
+import {setTimeout as delay} from 'node:timers/promises';
 
 // Public CO company access uses JWT-scoped Neon Data API RPCs only.
 // Legacy billing/POS server-side SQL credentials are NOT required to sign up.
@@ -30,7 +31,7 @@ export function neonAuth() {
 // Use signed JWT from Neon Auth, NOT the opaque getSession().session.token.
 export async function coRpc<T>(name: CoRpcName, params: Record<string,string> = {}) {
   const {data,error} = await neonAuth().token();
-  if (error || !data?.token) throw new Error("MARIZ CO user token unavailable");
+  if (error || !data?.token) throw Object.assign(new Error("MARIZ CO user token unavailable"),{code:'CO_AUTH_TOKEN_UNAVAILABLE'});
   return invokeCoRpc<T>(data.token, name, params);
 }
 
@@ -55,7 +56,17 @@ export async function currentVerifiedUser() {
 export async function myCompanies(_userId:string):Promise<MarizCompany[]> {
   // The database derives identity from auth.user_id() in the verified JWT.
   // Do not transmit a caller-supplied actor UUID to SECURITY DEFINER functions.
-  const rows = await coRpc<unknown>("api_my_companies");
+  // Auth updates can become visible to the data endpoint just after sign-in.
+  // Retry this read only; every attempt still requires the database's verified-user check.
+  let rows:unknown;
+  for(let attempt=0;;attempt++){
+    try{rows=await coRpc<unknown>('api_my_companies');break;}
+    catch(error){
+      const e=error as {code?:string;dbCode?:string};
+      if(attempt>=2||e.code!=='CO_RPC_HTTP_400'||e.dbCode!=='P0001')throw error;
+      await delay(attempt===0?250:750);
+    }
+  }
   if(!Array.isArray(rows))throw new Error("MARIZ CO company response invalid");
   return rows as MarizCompany[];
 }

@@ -1,67 +1,29 @@
-import { marizServerClient,marizBackendConfigured } from "../../../lib/mariz/supabase-server";
-import { recordCheck,decideKyb } from "./actions";
-import { redirect } from "next/navigation";
-
-export const dynamic="force-dynamic";
-const requiredChecks=["registry","identity","authority","documents","duplicate","contact"] as const;
-type Application={id:string;organization_id:string;status:string;submitted_at:string|null};
-type Company={id:string;legal_name:string;registration_no:string;entity_type:string};
-type Doc={id:string;application_id:string;document_type:string;storage_path:string};
-
+import {redirect} from 'next/navigation';
+import {coRpc,currentVerifiedUser,neonEnabled} from '../../../lib/mariz/neon-server';
+import {recordCheck,decideKyb,reviewDocument,requestReviewerCode} from './actions';
+import {neonErrorCategory} from '../../../lib/mariz/neon-error-category.mjs';
+export const dynamic='force-dynamic';
+type Application={id:string;organization_id:string;status:string;legal_name:string;registration_no:string;documents:{id:string;kind:string;status:string}[];checks:{code:string;result:string;at:string}[]};
+const requiredChecks=['registry','identity','authority','documents','duplicate','contact'];
 export default async function AdminKyb({searchParams}:{searchParams:Promise<{notice?:string}>}){
- if(!marizBackendConfigured())return <main className="interior"><h1>MARIZ Admin — KYB</h1><p>Reviewer access is disabled while V2 backend is not configured.</p></main>;
- const sb=await marizServerClient();
- const {data:{user}}=await sb.auth.getUser();
- if(!user)redirect("/co/auth");
- const {data:reviewer}=await sb.rpc("mariz_my_reviewer_status");
- if(reviewer!==true) return <main className="interior"><h1>Restricted administration</h1><p>This account has no MARIZ KYB reviewer grant.</p></main>;
- const {data:apps}=await sb.from("mariz_kyb_applications").select("id,organization_id,status,submitted_at")
-  .in("status",["submitted","under_review"]).order("submitted_at",{ascending:true}).limit(30);
- const items=(apps||[]) as Application[];
- const orgIds=[...new Set(items.map(a=>a.organization_id))];
- const {data:orgs}=orgIds.length?await sb.from("mariz_organizations")
-  .select("id,legal_name,registration_no,entity_type").in("id",orgIds):{data:[]};
- const orgMap=new Map(((orgs||[]) as Company[]).map(o=>[o.id,o]));
- const appIds=items.map(a=>a.id);
- const {data:docRows}=appIds.length?await sb.from("mariz_kyb_documents")
-  .select("id,application_id,document_type,storage_path").in("application_id",appIds):{data:[]};
- const docs=(docRows||[]) as Doc[];
+ if(!neonEnabled())return <main className="interior"><h1>MARIZ KYB</h1><p>Reviewer access is disabled.</p></main>;
+ if(!await currentVerifiedUser())redirect('/co/auth');
+ let items:Application[]=[],reviewer=false,failed=false;
+ try{reviewer=await coRpc<boolean>('api_kyb_reviewer_status');if(reviewer)items=await coRpc<Application[]>('api_kyb_review_queue');}
+ catch(error){console.error('MARIZ_CO_REVIEW_LOOKUP_FAILED',neonErrorCategory(error));failed=true;}
+ if(failed)return <main className="interior"><h1>Review service unavailable</h1><p>No decision was made. Refresh to retry.</p></main>;
+ if(!reviewer)return <main className="interior"><h1>Restricted administration</h1><p>This account has no MARIZ reviewer grant.</p></main>;
  const {notice}=await searchParams;
- return <main className="interior">
-  <div className="interior-head"><span className="eyebrow">MARIZ ADMIN / PRIVATE REVIEWER TERMINAL</span>
-   <h1>Company verification.</h1><p>For authorized KYB reviewers only. Approval requires six completed checks and a recorded decision reason. Never approve an application that you belong to.</p></div>
-  {notice&&<div className="notice">{notice.slice(0,240)}</div>}
-  {items.length===0&&<div className="content-panel"><h2>No applications awaiting review</h2></div>}
-  {items.map(a=><section className="content-panel" key={a.id} style={{marginBottom:22}}>
-   <div className="panel-top"><div><span className="eyebrow">{orgMap.get(a.organization_id)?.entity_type || "ENTITY"} · {orgMap.get(a.organization_id)?.registration_no || ""}</span>
-    <h2>{orgMap.get(a.organization_id)?.legal_name || "Company"}</h2><small>{a.id}</small></div><span className="tag amber">{a.status}</span></div>
-   <div style={{marginBottom:18}}><strong>Evidence files</strong>
-    {docs.filter(d=>d.application_id===a.id).map(d=><div key={d.id} className="document-row">
-     <span>{d.document_type}</span><a href={"/api/admin/kyb/document/"+d.id} target="_blank" rel="noreferrer" style={{marginLeft:"auto",fontSize:11,color:"#167761",fontWeight:700}}>Open audited evidence ↗</a>
-    </div>)}
-    <p className="footnote">Document bytes stay in private storage. Each reviewer link requires authentication, records an audit event and expires quickly.</p>
-   </div>
-   <strong style={{fontSize:14}}>Verification checks</strong>
-   <div className="form-grid" style={{margin:"15px 0"}}>
-    {requiredChecks.map(c=><form action={recordCheck} className="content-panel" key={c} style={{padding:14,minHeight:0,borderRadius:8}}>
-     <input type="hidden" name="application" value={a.id}/><input type="hidden" name="check_code" value={c}/>
-     <strong style={{fontSize:12,textTransform:"capitalize"}}>{c}</strong>
-     <select name="result" required defaultValue="needs_review" style={{margin:"12px 0",padding:11,border:"1px solid #ddd",borderRadius:6}}>
-      <option value="needs_review">Needs review</option><option value="pass">Pass</option><option value="fail">Fail</option>
-     </select>
-     <input name="notes" maxLength={2000} placeholder="Reviewer notes (optional)" style={{padding:10,border:"1px solid #ddd",borderRadius:6}}/>
-     <button className="button button-outline" style={{marginTop:12}}>Save check</button>
-    </form>)}
-   </div>
-   <form action={decideKyb} className="form-grid" style={{borderTop:"1px solid #e2eee4",paddingTop:20}}>
-    <input type="hidden" name="application" value={a.id}/>
-    <label>Decision<select name="decision" required defaultValue="needs_information">
-      <option value="needs_information">Request more information</option>
-      <option value="approved">Approve after six passed checks</option>
-      <option value="rejected">Reject</option></select></label>
-    <label>Decision reason<input name="reason" required minLength={4} maxLength={2000} placeholder="Explain the review decision"/></label>
-    <button className="button button-primary">Record decision →</button>
-   </form>
-  </section>)}
-  </main>;
+ return <main className="interior"><h1>Company verification</h1><p>Manual review only. Never approve a company you belong to. Verify official evidence and all six checks; approval does not activate a paid product.</p>
+ {notice&&<p role="status" className="notice">{notice.slice(0,240)}</p>}
+ <form action={requestReviewerCode}><button className="button button-outline">Send reviewer verification code</button></form>
+ {!items.length&&<p>No applications awaiting independent review.</p>}
+ {items.map(a=><section key={a.id} className="content-panel" style={{marginBottom:24}}><h2>{a.legal_name}</h2><p>{a.registration_no} · {a.status}</p>
+  <h3>Private evidence</h3>{a.documents.map(d=><div key={d.id}><a href={'/api/co/kyb/document/'+d.id}>Download {d.kind.replaceAll('_',' ')}</a><span> — {d.status}</span>
+   <form action={reviewDocument}><input type="hidden" name="document" value={d.id}/><select aria-label="Evidence review status" name="status" defaultValue="rejected"><option value="rejected">Reject evidence</option><option value="accepted">Accept after manual review</option></select><button className="button button-outline">Record evidence review</button></form></div>)}
+  <h3>Required checks</h3><div className="form-grid">{requiredChecks.map(code=><form key={code} action={recordCheck} className="content-panel"><input type="hidden" name="application" value={a.id}/><input type="hidden" name="check_code" value={code}/><strong>{code}</strong>
+   <p>{a.checks.filter(c=>c.code===code).sort((x,y)=>y.at.localeCompare(x.at))[0]?.result||'Not checked'}</p>
+   <select aria-label={code+" result"} name="result" defaultValue="needs_review"><option value="needs_review">Needs review</option><option value="pass">Pass</option><option value="fail">Fail</option></select><input aria-label={code+" reviewer notes"} name="notes" maxLength={2000} placeholder="Reviewer notes"/><button className="button button-outline">Save check</button></form>)}</div>
+  <form action={decideKyb} className="form-grid"><input type="hidden" name="application" value={a.id}/><label>Decision<select aria-label="Decision" name="decision" defaultValue="needs_information"><option value="needs_information">Request information</option><option value="approved">Approve after all checks</option><option value="rejected">Reject</option></select></label><label>Reason<input name="reason" required minLength={4} maxLength={2000}/></label><label>Fresh reviewer email code<input name="otp" required inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code"/></label><button className="button button-primary">Record final decision</button></form>
+ </section>)}</main>;
 }

@@ -1,6 +1,7 @@
 "use server";
 import {redirect} from "next/navigation";
 import {neonAuth,neonEnabled,neonRegistrationEnabled} from "../../../lib/mariz/neon-server";
+import {resetPasswordWithOtp} from '../../../lib/mariz/neon-email-recovery';
 
 function msg(value:string):never{redirect("/co/auth?message="+encodeURIComponent(value));}
 export async function signUp(form:FormData) {
@@ -48,4 +49,22 @@ export async function verifyEmailCode(form:FormData) {
  try{const {error}=await neonAuth().emailOtp.verifyEmail({email,otp});failed=Boolean(error);}catch{}
  if(failed)msg("Code could not be verified. It may be invalid or expired. Request a new code if needed.");
  msg("Email verified. Sign in to continue.");
+}
+
+export async function requestPasswordReset(form:FormData) {
+ if(!neonEnabled())msg("Account recovery is not enabled yet");
+ const email=String(form.get('email')||'').trim().toLowerCase();
+ if(email.length>254||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))msg('Enter a valid email');
+ try{await neonAuth().emailOtp.sendVerificationOtp({email,type:'forget-password'});}catch{}
+ msg('If this account is eligible, a password reset code has been requested. Check your email.');
+}
+export async function resetPassword(form:FormData) {
+ if(!neonEnabled())msg('Account recovery is not enabled yet');
+ const email=String(form.get('email')||'').trim().toLowerCase(),otp=String(form.get('otp')||'').trim(),password=String(form.get('password')||'');
+ if(email.length>254||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||!/^\d{6}$/.test(otp)||password.length<12||password.length>128)msg('Enter your email, six-digit reset code and a new password of 12–128 characters');
+ let failed=true;
+ try{await resetPasswordWithOtp(email,otp,password);failed=false;}catch{console.error('MARIZ_CO_RESET_FAILED','provider_or_transport_error');}
+ if(failed)msg('Password reset failed. The code may be invalid or expired.');
+ await neonAuth().signOut();
+ msg('Password reset complete. Sign in with your new password.');
 }

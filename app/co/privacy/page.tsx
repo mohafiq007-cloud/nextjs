@@ -1,0 +1,6 @@
+import Link from 'next/link';
+export default function RegistrationPrivacy(){return <main className="interior"><h1>MARIZ CO registration privacy</h1>
+ <p>MARIZ uses your account contact details, company profile and necessary registration evidence to operate your company workspace, verify authority and prevent unauthorized access. Company approval requires a separate manual review.</p>
+ <p>Account and company data are processed through Neon infrastructure in Singapore and the MARIZ application hosting provider, Vercel. Evidence is kept in private storage; access by company administrators and authorized MARIZ reviewers is permission-checked and audited. Do not upload unrelated personal, banking or identity documents.</p>
+ <p>Contact <a href="mailto:mariz.headquarters@gmail.com">mariz.headquarters@gmail.com</a> for access, corrections, deletion requests and questions about necessary retention. MARIZ reviews requests against account security and applicable recordkeeping requirements. No automatic payment, subscription or marketing consent is created by registration.</p>
+ <p>This page describes the registration service. Product-specific terms and charges require separate acceptance.</p><Link href="/co/auth">Return to company access</Link></main>;}

@@ -41,5 +41,5 @@ export async function startKyb(form:FormData){
  try{
   await coRpc<string>("api_start_kyb",{p_organization:org});
  }catch{notice("Unable to start KYB for this company");}
- notice("KYB application draft created. Secure document uploads are not open yet.");
+ notice("KYB application draft created. Add the required evidence before submitting for review.");
 }

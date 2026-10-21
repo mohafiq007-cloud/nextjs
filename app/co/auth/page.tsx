@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {signIn,signUp,sendVerificationCode,verifyEmailCode} from "./actions";
+import {signIn,signUp,sendVerificationCode,verifyEmailCode,requestPasswordReset,resetPassword} from "./actions";
 import {neonEnabled,neonRegistrationEnabled} from "../../../lib/mariz/neon-server";
 export const dynamic="force-dynamic";
 export default async function CompanyAccess({searchParams}:{searchParams:Promise<{message?:string}>}){
@@ -39,6 +39,18 @@ export default async function CompanyAccess({searchParams}:{searchParams:Promise
    <label>Account email<input name="email" type="email" required maxLength={254} autoComplete="email" disabled={!enabled}/></label>
    <label>Six-digit code<input name="otp" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} autoComplete="one-time-code" required disabled={!enabled}/></label>
    <button className="button button-primary" disabled={!enabled}>Verify email</button>
+  </form>
+ </section>
+ <section className="content-panel" style={{marginTop:22}}><h2>Reset your password</h2>
+  <form action={requestPasswordReset} className="form-grid">
+   <label>Recovery email<input name="email" type="email" required maxLength={254} autoComplete="email" disabled={!enabled}/></label>
+   <button className="button button-outline" disabled={!enabled}>Send password reset code</button>
+  </form>
+  <form action={resetPassword} className="form-grid" style={{marginTop:16}}>
+   <label>Recovery email<input name="email" type="email" required maxLength={254} autoComplete="email" disabled={!enabled}/></label>
+   <label>Password reset code<input name="otp" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} autoComplete="one-time-code" required disabled={!enabled}/></label>
+   <label>New password<input name="password" type="password" minLength={12} maxLength={128} autoComplete="new-password" required disabled={!enabled}/></label>
+   <button className="button button-primary" disabled={!enabled}>Reset password</button>
   </form>
  </section><p style={{marginTop:25}}><Link href="/">← Return to MARIZ</Link></p></main>;
 }
