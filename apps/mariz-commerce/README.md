@@ -12,8 +12,9 @@
 7. [docs/06_ACCEPTANCE_AND_RELEASE.md](docs/06_ACCEPTANCE_AND_RELEASE.md) — go/no-go acceptance, security, regression and rollback
 8. [docs/07_DOMAINS_AND_PRICING.md](docs/07_DOMAINS_AND_PRICING.md) — storefront domains and unapproved sample SaaS pricing
 9. [docs/08_EXTERNAL_LINKS.md](docs/08_EXTERNAL_LINKS.md) — actual public links, provider references and integration readiness
-10. [prototype/README.md](prototype/README.md) — file provenance and how to inspect
-11. [.env.example](.env.example) — names only, no real secrets
+10. [docs/09_WHATSAPP_BUSINESS_CONNECTOR.md](docs/09_WHATSAPP_BUSINESS_CONNECTOR.md) — merchant-owned WhatsApp Business self-service onboarding, chat-link fallback and Meta approval gates
+11. [prototype/README.md](prototype/README.md) — file provenance and how to inspect
+12. [.env.example](.env.example) — names only, no real secrets
 
 ## Live project
 - Vercel project: mariz-commerce / prj_I5sgGu0PodspAqCVxatEd0qqJjAA
