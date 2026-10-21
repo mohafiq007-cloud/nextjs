@@ -38,3 +38,13 @@ HQ V2 repo: mohafiq007-cloud/nextjs; Neon project MARIZ HQ V2 Isolated / databas
 
 ## No-go statement
 Prototype can be shown to internal reviewers using only fictional input; real customers, real customer data, actual Billplz charges and provider dispatches remain strictly NO-GO.
+
+## Execution checkpoint — 21 October 2026
+
+Reconciled the shared HQ baseline locally with existing CO recovery/Billplz source rather than using the older elevated-SQL runtime. No protected branch or deployment was changed by that local reconciliation.
+
+Added merchant-only staging order API `/api/commerce/orders`, strict request contract and migration candidate `neon/001_merchant_order_staging.sql`. HQ verified-user JWT reaches a permission-checked RPC; database catalog prices produce immutable line snapshots and integer-sen totals; caller price/paid fields are refused; retries preserve one order/audit; changed retries conflict. Order/payment/fulfillment fields remain separate and payment stays pending. Direct table grants are denied; RLS is enabled. Production and default staging flags fail closed. This is not anonymous customer checkout or a completed storefront backend.
+
+Rollback-only testing on HQ's existing isolated test branch passed server-price, replay, conflict, client-price injection, foreign-tenant and direct-grant assertions. Readback confirms no Commerce schema or fixtures retained. No migration was applied to main, no merchant credentials were provisioned and no Billplz sale or courier booking was attempted.
+
+Live HTTP snapshot matches the known static prototype deployment `dpl_Dm7CuFpVHPQd2TH9aYrrEMKzsa44`; root/demo/connect/domain remain identical, store/customer remain identical. Preserve these source snapshots. Remaining gates: authenticated customer identity/history, published catalog/variants, tenant domain verification, provider-owned sandbox credentials, signed callbacks/reconciliation, delivery workflow, restore and actual staging E2E. Customer sales remain NO-GO.

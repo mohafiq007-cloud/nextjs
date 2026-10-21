@@ -10,7 +10,8 @@ test("MARIZ CO uses official Neon authentication, never uses client-supplied act
  assert.ok(auth.includes("getSession()"));
  assert.ok(create.includes("currentVerifiedUser()"));
  assert.ok(create.includes("organization.create"));
- assert.ok(create.includes("register_company_profile"));
+ assert.ok(create.includes("api_register_company"));
+ assert.ok(!create.includes("marizSql()"));
  assert.ok(!create.includes("form.get(\"actor\")"));
 });
 test("Neon company registration is free and onboarding is disabled by default",()=>{
@@ -28,7 +29,7 @@ test("Neon company membership is verified through DB and approved-company demo g
  const demo=get("app/co/pos/preview/page.tsx");
  assert.ok(sql.includes("emailVerified"));
  assert.ok(sql.includes('"userId"=p_actor'));
- assert.ok(adapter.includes("my_company_profiles"));
+ assert.ok(adapter.includes("api_my_companies"));
  assert.ok(demo.includes("isVerifiedCompanyMember"));
  assert.ok(demo.includes('redirect("/co/workspace")'));
 });

@@ -10,7 +10,8 @@ export default async function CompanyAccess({searchParams}:{searchParams:Promise
   <h1>Your company starts here.</h1>
   <p>Register your company for free. Verify your email address and submit official company documentation for MARIZ review. Paid products activate only when explicitly selected.</p></div>
  {message&&<p className="notice" role="status">{message.slice(0,240)}</p>}
- {!enabled&&<p className="notice" role="status">Private V2 integration preview: real sign-in and onboarding are disabled pending security validation.</p>}
+ {!enabled&&<p className="notice" role="status">Company onboarding is temporarily unavailable while secure registration is being verified. Please do not retry with multiple accounts.</p>}
+ {enabled&&!register&&<p className="notice" role="status">New account registration is temporarily closed pending email-verification and company-registration checks.</p>}
  <div className="two-col" style={{gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,320px),1fr))"}}>
   <section className="content-panel"><h2>Create a MARIZ CO account</h2>
    <form action={signUp} className="form-grid" style={{gridTemplateColumns:"1fr"}}>
