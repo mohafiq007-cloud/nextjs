@@ -23,6 +23,6 @@ test("Resend and verify retain the same email across server-action redirects",()
  assert.match(src,/\.set\("mariz_co_otp_email",email,/);
  assert.match(src,/msg\("Account created\. Request the latest email verification code to continue\.","\/co\/auth\/verify"\)/);
  assert.match(page,/\.get\("mariz_co_otp_email"\)/);
- assert.equal((page.match(/defaultValue=\{verificationEmail\}/g)||[]).length,2);
+ assert.equal((page.match(/defaultValue=\{email\}/g)||[]).length,2);
  assert.match(src,/\.set\("mariz_co_otp_email","",/);
 });
