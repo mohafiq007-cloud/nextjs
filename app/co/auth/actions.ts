@@ -1,9 +1,25 @@
 "use server";
 import {redirect} from "next/navigation";
+import {cookies} from "next/headers";
 import {neonAuth,neonEnabled,neonRegistrationEnabled} from "../../../lib/mariz/neon-server";
 import {resetPasswordWithOtp} from '../../../lib/mariz/neon-email-recovery';
 
 function msg(value:string):never{redirect("/co/auth?message="+encodeURIComponent(value));}
+// Emit only fixed diagnostic categories: never log an email, OTP, credential or raw provider response.
+function otpFailureCategory(error:unknown):string {
+ const e=(error&&typeof error==="object")?error as {status?:number;statusCode?:number;code?:string;message?:string}:{};
+ const status=Number(e.status??e.statusCode);
+ const description=[e.code,e.message].filter(x=>typeof x==="string").join(" ").toLowerCase();
+ if(status===429||/rate.?limit|too.many/.test(description))return "rate_limited";
+ if(status===401||status===403)return "authorization_rejected";
+ if(status===404)return "endpoint_not_found";
+ if(status>=500)return "provider_unavailable";
+ if(/expir/.test(description))return "expired_code";
+ if(/invalid|incorrect|wrong|mismatch/.test(description))return "invalid_code_or_purpose";
+ if(/already.verify/.test(description))return "already_verified";
+ if(status===400||status===422)return "provider_rejected";
+ return "provider_or_transport_error";
+}
 export async function signUp(form:FormData) {
  if(!neonRegistrationEnabled())msg("MARIZ CO account registration is not open yet");
  const name=String(form.get("name")||"").trim();
@@ -36,9 +52,15 @@ export async function sendVerificationCode(form:FormData) {
  if(!neonEnabled())msg("Email verification is not enabled yet");
  const email=String(form.get("email")||"").trim().toLowerCase();
  if(email.length>254||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))msg("Enter a valid email");
- // Provider enforces OTP expiry, attempt and resend limits; never disclose existence.
- try{await neonAuth().emailOtp.sendVerificationOtp({email,type:"email-verification"});}catch{}
- msg("If this account is eligible, a verification code has been requested. Check your email and wait before resending.");
+ // Keep the account email across redirect, so the resend and verification forms use the same address.
+ // This cookie is only a UI hint: Neon Auth remains the authority for identity and verification.
+ (await cookies()).set("mariz_co_otp_email",email,{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/co/auth",maxAge:15*60});
+ // Do not disclose account existence; do record a safe failure category for operations.
+ try{
+  const {error}=await neonAuth().emailOtp.sendVerificationOtp({email,type:"email-verification"});
+  if(error)console.error("MARIZ_CO_OTP_SEND_FAILED",otpFailureCategory(error));
+ }catch(error){console.error("MARIZ_CO_OTP_SEND_FAILED",otpFailureCategory(error));}
+ msg("If this account is eligible, a verification code has been requested. Use the newest code. If already verified, sign in instead.");
 }
 export async function verifyEmailCode(form:FormData) {
  if(!neonEnabled())msg("Email verification is not enabled yet");
@@ -46,8 +68,13 @@ export async function verifyEmailCode(form:FormData) {
  const otp=String(form.get("otp")||"").trim();
  if(email.length>254||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||!/^\d{6}$/.test(otp))msg("Enter your email and six-digit verification code");
  let failed=true;
- try{const {error}=await neonAuth().emailOtp.verifyEmail({email,otp});failed=Boolean(error);}catch{}
- if(failed)msg("Code could not be verified. It may be invalid or expired. Request a new code if needed.");
+ try{
+  const {error}=await neonAuth().emailOtp.verifyEmail({email,otp});
+  failed=Boolean(error);
+  if(error)console.error("MARIZ_CO_OTP_VERIFY_FAILED",otpFailureCategory(error));
+ }catch(error){console.error("MARIZ_CO_OTP_VERIFY_FAILED",otpFailureCategory(error));}
+ if(failed)msg("Code could not be verified. Use the latest code for this account, or sign in if already verified.");
+ (await cookies()).set("mariz_co_otp_email","",{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/co/auth",maxAge:0});
  msg("Email verified. Sign in to continue.");
 }
 
