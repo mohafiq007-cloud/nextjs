@@ -3,7 +3,7 @@ import {registerCompanyRecoverably} from "../../../lib/mariz/co-registration.mjs
 import {redirect} from "next/navigation";
 import {currentVerifiedUser, coRpc, neonAuth, neonEnabled} from "../../../lib/mariz/neon-server";
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function notice(value:string):never{redirect("/co/workspace?notice="+encodeURIComponent(value));}
+function notice(value:string,target:"/co/workspace"|"/co/company/new"="/co/workspace"):never{redirect(target+"?notice="+encodeURIComponent(value));}
 async function verifiedUser(){
  if(!neonEnabled())notice("MARIZ CO integration is not active");
  const user=await currentVerifiedUser();
@@ -20,7 +20,7 @@ export async function createCompany(form:FormData){
  if(form.get("authority")!=="yes"||legal.length<3||legal.length>200||reg.length<4||reg.length>80||address.length<8||address.length>700||
  !["company","sole_proprietor","partnership","llp","society","other"].includes(type)||
  !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
-  notice("Complete all official company details and your authority declaration");
+  notice("Complete all official company details and your authority declaration","/co/company/new");
  try{
   await registerCompanyRecoverably({actorId:user.id,auth:neonAuth(),rpc:coRpc,profile:{
     p_legal_name:legal,
@@ -30,7 +30,7 @@ export async function createCompany(form:FormData){
     p_business_email:email,
   }});
  }catch{
-  notice("Company registration is incomplete. Retry with the same SSM number and details to resume safely. Contact support if this persists.");
+  notice("Company registration is incomplete. Retry with the same SSM number and details to resume safely. Contact support if this persists.","/co/company/new");
  }
  notice("Free company profile created. Start KYB verification next.");
 }
