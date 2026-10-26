@@ -7,7 +7,7 @@ import {resetPasswordWithOtp} from '../../../lib/mariz/neon-email-recovery';
 function msg(value:string):never{redirect("/co/auth?message="+encodeURIComponent(value));}
 // Emit only fixed diagnostic categories: never log an email, OTP, credential or raw provider response.
 function otpFailureCategory(error:unknown):string {
- const e=(error&&typeof error==="object")?error as {status?:number;statusCode?:number;code?:string;message?:string}:{};
+ const e:{status?:number;statusCode?:number;code?:string;message?:string}=(error&&typeof error==="object")?error as {status?:number;statusCode?:number;code?:string;message?:string}:{};
  const status=Number(e.status??e.statusCode);
  const description=[e.code,e.message].filter(x=>typeof x==="string").join(" ").toLowerCase();
  if(status===429||/rate.?limit|too.many/.test(description))return "rate_limited";
