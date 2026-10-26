@@ -51,3 +51,13 @@ test("Responsive flow styling and progress labels exist",()=>{
  assert.match(shell,/aria-label="Company onboarding progress"/);
  assert.match(shell,/aria-current/);
 });
+
+test("Company registration is a protected third step, not mixed into sign in",()=>{
+ const page=read("app/co/company/new/page.tsx"),workspace=read("app/co/workspace/page.tsx"),action=read("app/co/workspace/actions.ts");
+ assert.match(page,/currentVerifiedUser\(\)/);
+ assert.match(page,/action=\{createCompany\}/);
+ assert.match(page,/step=\{3\}/);
+ assert.match(workspace,/href="\/co\/company\/new"/);
+ assert.doesNotMatch(workspace,/action=\{createCompany\}/);
+ assert.match(action,/\/co\/company\/new/);
+});
