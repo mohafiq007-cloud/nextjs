@@ -1,7 +1,7 @@
 name: MARIZ V2 runtime security
 on:
   pull_request:
-    branches: [mariz-hq-v2-foundation, main]
+    branches: [mariz-hq-v2-foundation, main, feature/billplz-sandbox-adapter]
 permissions:
   contents: read
 jobs:
