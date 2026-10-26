@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
-import {createCompany,startKyb} from "./actions";
+import {startKyb} from "./actions";
 import {signOut} from "../auth/actions";
 import {currentVerifiedUser,myCompanies,neonEnabled} from "../../../lib/mariz/neon-server";
 import {neonErrorCategory} from "../../../lib/mariz/neon-error-category.mjs";
@@ -33,18 +33,8 @@ export default async function Workspace({searchParams}:{searchParams:Promise<{no
      {c.kyb_status&&<KybPanel organizationId={c.organization_id}/>}
      <p className="footnote">Official registration evidence and MARIZ approval are required. No product subscription has started.</p></div>}
   </section>)}
-  <section className="content-panel"><h2 style={{fontSize:25}}>Register another company</h2>
-   <p className="footnote">Only register companies you are authorized to represent. SSM numbers are checked for duplicates.</p>
-   <form action={createCompany} className="form-grid">
-    <label>Jurisdiction<input readOnly value="Malaysia"/></label>
-    <label>Entity type<select name="entity_type" defaultValue="company"><option value="company">Sdn Bhd / Berhad</option><option value="sole_proprietor">Sole proprietor</option><option value="partnership">Partnership</option><option value="llp">LLP / PLT</option><option value="society">Society</option><option value="other">Other registered entity</option></select></label>
-    <label>Registered legal name<input name="legal_name" required minLength={3} maxLength={200}/></label>
-    <label>SSM number<input name="registration_no" required minLength={4} maxLength={80}/></label>
-    <label className="full">Registered address<input name="address" required minLength={8} maxLength={700}/></label>
-    <label>Business email<input type="email" name="business_email" required/></label>
-    <label style={{alignSelf:"end"}}><span><input type="checkbox" name="authority" value="yes" required/> I am authorized to register this company.</span></label>
-    <button className="button button-primary">Create free company profile →</button>
-   </form>
-  </section><p style={{marginTop:22}}><Link href="/">← MARIZ homepage</Link></p>
+  {companies.length===0&&<section className="content-panel"><h2>Register your first company</h2><p>Your account is verified. Add the official company details to begin your application.</p><Link href="/co/company/new" className="button button-primary">Register a company →</Link></section>}
+  {companies.length>0&&<p style={{marginTop:20}}><Link href="/co/company/new" className="button button-outline">Register another company →</Link></p>}
+<p style={{marginTop:22}}><Link href="/">← MARIZ homepage</Link></p>
  </main>;
 }
