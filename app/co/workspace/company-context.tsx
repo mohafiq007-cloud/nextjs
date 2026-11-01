@@ -1,0 +1,9 @@
+import Link from 'next/link';
+import {clientCompanyContext,type ClientCompanyContext} from '../../../lib/mariz/client-company-server';
+import s from './workspace-v3.module.css';
+export default async function CompanyContext(){
+ let data:ClientCompanyContext|undefined;
+ try{data=await clientCompanyContext();}catch{}
+ if(!data)return <section className={s.panel} role="status"><h2>Contact and member details could not be loaded.</h2><p>Your company record and documents remain available below. Please try again to retrieve the latest contact and access details.</p><Link href="/co/workspace?section=company">Try again →</Link></section>;
+ return <><section className={s.panel}><h2>Business contact</h2><dl className={s.details}><div><dt>Registered address</dt><dd>{data.contact.registeredAddress||'Not provided'}</dd></div><div><dt>Business email</dt><dd>{data.contact.businessEmail||'Not provided'}</dd></div><div><dt>Country</dt><dd>{data.contact.country==='MY'?'Malaysia':data.contact.country||'Not provided'}</dd></div></dl><p className={s.small}>Self-service company detail editing is not available in this workspace. To request a correction, <Link href="/co/workspace?section=feedback">Ask MARIZ for help →</Link></p></section><section className={s.panel}><h2>Members &amp; roles</h2><p>People linked to this company account. POS staff and working hours stay inside POS.</p><ul className={s.memberList}>{data.members.map((member,index)=><li key={index}><strong>{member.name||'Company member'}</strong><span className={s.badge}>{({owner:'Owner',admin:'Administrator',member:'Member'} as Record<string,string>)[member.role]||'Custom role'}</span></li>)}</ul>{data.hasMoreMembers&&<p className={s.small}>Showing the first 100 members. Contact MARIZ for the full list.</p>}<p className={s.small}>Invitations and role changes are not available here yet. <Link href="/co/workspace?section=feedback">Ask about company access →</Link></p></section></>;
+}
