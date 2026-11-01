@@ -10,7 +10,7 @@ export function feedbackConfigured(){
 function feedbackOrigin(){
  const origin=new URL(process.env.MARIZ_CO_FEEDBACK_API_ORIGIN||'');
  const environment=process.env.VERCEL_ENV||process.env.NODE_ENV||'';
- const expectedHost=environment==='production'?'mariz-hq-v4.pages.dev':'co-v3-stage2.mariz-hq-v4.pages.dev';
+ const expectedHost=environment==='production'?'marizhq.com':'co-v3-stage2.mariz-hq-v4.pages.dev';
  if(!['production','preview','development'].includes(environment)||origin.protocol!=='https:'||origin.hostname!==expectedHost||origin.username||origin.password||origin.port||origin.pathname!=='/'||origin.search||origin.hash)throw new FeedbackError(503,'Feedback is not connected yet.');
  return origin.origin;
 }
@@ -18,7 +18,8 @@ async function request<T>(path:string,method='GET',data?:object):Promise<T>{
  const origin=feedbackOrigin(),user=await currentVerifiedUser();if(!user)throw new FeedbackError(401,'Sign in again to continue.');
  const companies=await myCompanies(user.id);if(companies.length!==1)throw new FeedbackError(403,'Your company access could not be confirmed.');
  const token=await neonAuth().token();if(token.error||!token.data?.token)throw new FeedbackError(401,'Sign in again to continue.');
- let response:Response;try{response=await fetch(origin+'/api/co-feedback'+path,{method,headers:{authorization:'Bearer '+token.data.token,accept:'application/json',...(data?{'content-type':'application/json'}:{})},...(data?{body:JSON.stringify(data)}:{}),redirect:'error',cache:'no-store',signal:AbortSignal.timeout(12000)});}catch{throw new FeedbackError(503,'We could not confirm your request. Please retry using the same form.');}
+ const prefix=process.env.VERCEL_ENV==='production'?'/co/api/co-feedback':'/api/co-feedback';
+ let response:Response;try{response=await fetch(origin+prefix+path,{method,headers:{authorization:'Bearer '+token.data.token,accept:'application/json',...(data?{'content-type':'application/json'}:{})},...(data?{body:JSON.stringify(data)}:{}),redirect:'error',cache:'no-store',signal:AbortSignal.timeout(12000)});}catch{throw new FeedbackError(503,'We could not confirm your request. Please retry using the same form.');}
  if(!response.ok){const safe:Record<number,string>={400:'Check the required fields.',401:'Sign in again to continue.',403:'Your company access could not be confirmed.',404:'Case not found in your company.',409:'This request was already used for different feedback. Open your feedback history before starting again.',429:'Too many messages. Please try again later.'};throw new FeedbackError(response.status,safe[response.status]||'Feedback is temporarily unavailable. Please retry using the same form.');}
  try{return await response.json() as T;}catch{throw new FeedbackError(503,'The response could not be confirmed. Please retry using the same form.');}
 }
