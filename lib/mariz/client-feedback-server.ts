@@ -9,7 +9,9 @@ export function feedbackConfigured(){
 }
 function feedbackOrigin(){
  const origin=new URL(process.env.MARIZ_CO_FEEDBACK_API_ORIGIN||'');
- if(!['preview','development'].includes(process.env.VERCEL_ENV||process.env.NODE_ENV||'')||origin.protocol!=='https:'||origin.hostname!=='co-v3-stage2.mariz-hq-v4.pages.dev'||origin.username||origin.password||origin.port||origin.pathname!=='/'||origin.search||origin.hash)throw new FeedbackError(503,'Feedback is not connected yet.');
+ const environment=process.env.VERCEL_ENV||process.env.NODE_ENV||'';
+ const expectedHost=environment==='production'?'mariz-hq-v4.pages.dev':'co-v3-stage2.mariz-hq-v4.pages.dev';
+ if(!['production','preview','development'].includes(environment)||origin.protocol!=='https:'||origin.hostname!==expectedHost||origin.username||origin.password||origin.port||origin.pathname!=='/'||origin.search||origin.hash)throw new FeedbackError(503,'Feedback is not connected yet.');
  return origin.origin;
 }
 async function request<T>(path:string,method='GET',data?:object):Promise<T>{
