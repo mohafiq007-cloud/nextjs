@@ -1,0 +1,30 @@
+{
+  "name": "mariz-admin-co-review",
+  "entrypoint": "production-worker.mjs",
+  "files": [
+    {
+      "name": "production-worker.mjs",
+      "type": "application/javascript"
+    },
+    {
+      "name": "staging-worker.mjs",
+      "type": "application/javascript"
+    },
+    {
+      "name": "worker.mjs",
+      "type": "application/javascript"
+    },
+    {
+      "name": "brand-only-worker.mjs",
+      "type": "application/javascript"
+    },
+    {
+      "name": "native-assets.mjs",
+      "type": "application/javascript"
+    },
+    {
+      "name": "native-worker.mjs",
+      "type": "application/javascript"
+    }
+  ]
+}

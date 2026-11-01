@@ -1,0 +1,10 @@
+{
+  "name": "mariz-co-gateway",
+  "entrypoint": "worker.mjs",
+  "files": [
+    {
+      "name": "worker.mjs",
+      "type": "application/javascript"
+    }
+  ]
+}
