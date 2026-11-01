@@ -8,12 +8,13 @@ export default {async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(u.hostname!=='admin.marizhq.com')return previous.fetch(request,env,ctx);
  const staff=u.pathname==='/console/co-feedback'||u.pathname==='/console/co-feedback.js';
- if(staff||u.pathname==='/console/api/co-feedback'||u.pathname==='/api/feedback'){
+ if(staff||u.pathname==='/console/api/co-feedback'||u.pathname==='/console/api/feedback'||u.pathname==='/api/feedback'){
   const admin=await authorizeAdmin(request,env);if(admin.error)return json({error:admin.error},admin.status);
   if(staff){if(request.method!=='GET')return json({error:'Method not allowed'},405);return new Response(u.pathname.endsWith('.js')?script:page,{headers:{'content-type':u.pathname.endsWith('.js')?'text/javascript; charset=utf-8':'text/html; charset=utf-8','cache-control':'private, no-store','content-security-policy':"default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",'x-content-type-options':'nosniff'}});}
   if(u.pathname==='/console/api/co-feedback')return handleAdminReply(request,env,{authorizeAdmin:async()=>admin});
   if(request.method==='GET'){
-   const original=await previous.fetch(request,env,ctx);if(!original.ok||!original.headers.get('content-type')?.includes('application/json'))return original;
+   const legacyUrl=new URL(request.url);legacyUrl.pathname='/api/feedback';
+   const original=await previous.fetch(new Request(legacyUrl,request),env,ctx);if(!original.ok||!original.headers.get('content-type')?.includes('application/json'))return original;
    const data=await original.json();if(!Array.isArray(data.tickets))return json({error:'Inbox response unavailable'},503);
    const rows=await env.FEEDBACK_DB.prepare('SELECT id,reference,kind,title,description,contact,status,priority,assignee,internal_notes,created_at,updated_at FROM feedback_company_tickets ORDER BY created_at DESC LIMIT 100').all();
    return json({tickets:[...data.tickets,...(rows.results||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,100)});
@@ -27,7 +28,11 @@ export default {async fetch(request,env,ctx){
     await env.FEEDBACK_DB.prepare("UPDATE feedback_company_tickets SET status=?,priority=?,assignee=?,internal_notes=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?").bind(d.status,d.priority,d.assignee,d.internal_notes,d.id).run();return json({updated:true});}
   }
  }
- const response=await previous.fetch(request,env,ctx);
- if(request.method==='GET'&&u.pathname.startsWith('/console')&&response.status===200&&response.headers.get('content-type')?.includes('text/html'))return new HTMLRewriter().on('body',{element(e){e.append('<p style="padding:1rem"><a class="btn outline" href="/console/co-feedback">Company feedback conversations →</a></p>',{html:true});}}).transform(response);
+ const fallbackUrl=new URL(request.url);if(fallbackUrl.pathname==='/console/api/feedback')fallbackUrl.pathname='/api/feedback';
+ const response=await previous.fetch(new Request(fallbackUrl,request),env,ctx);
+ if(request.method==='GET'&&u.pathname.startsWith('/console')&&response.status===200&&response.headers.get('content-type')?.includes('text/html')){
+  const html=(await response.text()).replaceAll("request('/api/'+tab)","request(tab==='feedback'?'/console/api/feedback':'/api/'+tab)").replaceAll("request('/api/feedback'","request('/console/api/feedback'").replace('</body>','<p style="padding:1rem"><a class="btn outline" href="/console/co-feedback">Company feedback conversations →</a></p></body>');
+  const headers=new Headers(response.headers);headers.delete('content-length');return new Response(html,{status:response.status,headers});
+ }
  return response;
 }};
