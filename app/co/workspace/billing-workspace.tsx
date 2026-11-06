@@ -1,9 +1,11 @@
 import Link from 'next/link';import {clientBilling,type ClientBilling} from '../../../lib/mariz/client-billing-server';import s from './workspace-v3.module.css';
+import PosCommercialPanel from './pos-commercial-panel';import {commercialEnabled} from '../../../lib/mariz/pos-commercial-server.mjs';
 const date=(raw:string)=>Number.isFinite(Date.parse(raw))?new Intl.DateTimeFormat('en-MY',{dateStyle:'medium',timeZone:'Asia/Kuala_Lumpur'}).format(new Date(raw)):'Date unavailable';
 const amount=(minor:number,currency:string)=>Number.isSafeInteger(minor)&&minor>=0&&currency==='MYR'?new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR'}).format(minor/100):'Amount unavailable';
 const status=(raw:string,issuance:string)=>raw==='paid'?'Paid':issuance==='failed'||raw==='failed'?'Payment request failed':raw==='due'?'Awaiting payment':raw==='deleted'||raw==='void'?'Cancelled':'Pending confirmation';
 const safeUrl=(raw:string|null)=>typeof raw==='string'&&/^https:\/\/www\.billplz\.com\/bills\/[A-Za-z0-9_-]+$/.test(raw)?raw:null;
 export default async function BillingWorkspace(){
+ if(commercialEnabled())return <PosCommercialPanel/>;
  let data:ClientBilling|undefined;try{data=await clientBilling();}catch{}
  if(!data)return <section className={s.panel} role="status"><h2>Billing could not be retrieved.</h2><p>Your company registration remains complete. We could not confirm the latest billing records. This does not mean that a payment failed or that you owe money.</p><div className={s.actions}><Link href="/co/workspace?section=billing" className={s.secondary}>Try again →</Link><Link href="/co/workspace?section=feedback">Ask MARIZ for help →</Link></div></section>;
  if(data.state==='verification_required')return <section className={s.panel}><h2>Company verification comes first.</h2><p>Your company account is free. Billing for paid services becomes available after MARIZ approves your company. No payment is required to complete registration.</p><div className={s.actions}><Link href="/co/workspace?section=company" className={s.secondary}>View company verification →</Link></div></section>;

@@ -30,9 +30,9 @@ export function billplzSandboxConfigured() {
   );
 }
 
-export function billplzCallbackUrl() {
+export function billplzCallbackUrl(pilotCheckout=false) {
   if (!billplzSandboxConfigured()) throw new Error("Billplz sandbox integration is disabled");
-  const url = new URL("/api/payments/billplz/callback", process.env.BILLPLZ_PUBLIC_BASE_URL!);
+  const url = new URL(pilotCheckout?"/api/payments/pos-pilot/callback":"/api/payments/billplz/callback", process.env.BILLPLZ_PUBLIC_BASE_URL!);
   const expected = new URL(process.env.BILLPLZ_PUBLIC_BASE_URL!);
   if (expected.protocol !== "https:" || expected.username || expected.password || expected.pathname !== "/" || expected.search || expected.hash || url.origin !== expected.origin) {
     throw new Error("Billplz public base URL must be HTTPS");
@@ -47,6 +47,7 @@ export async function createBillplzSandboxBill(input: {
   description: string;
   requestId: string;
   organizationId: string;
+  pilotCheckout?: boolean;
 }): Promise<BillplzBill> {
   if (!billplzSandboxConfigured()) throw new Error("Billplz sandbox integration is disabled");
   if (
@@ -61,7 +62,7 @@ export async function createBillplzSandboxBill(input: {
     input.description.length > 200
   ) throw new Error("Invalid sandbox Billplz bill details");
 
-  const callbackUrl = billplzCallbackUrl();
+  const callbackUrl = billplzCallbackUrl(input.pilotCheckout===true);
   const form = new URLSearchParams({
     collection_id: process.env.BILLPLZ_COLLECTION_ID!,
     name: input.customerName.trim(),
@@ -75,6 +76,7 @@ export async function createBillplzSandboxBill(input: {
     reference_2: input.organizationId,
     deliver: "false",
   });
+  if(input.pilotCheckout===true)form.set('redirect_url',new URL('/co/workspace?section=billing',process.env.BILLPLZ_PUBLIC_BASE_URL!).toString());
   const response = await fetch("https://www.billplz-sandbox.com/api/v3/bills", {
     method: "POST",
     headers: {
