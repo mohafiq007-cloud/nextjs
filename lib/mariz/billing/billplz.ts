@@ -37,6 +37,13 @@ export function billplzCallbackUrl(pilotCheckout=false) {
   if (expected.protocol !== "https:" || expected.username || expected.password || expected.pathname !== "/" || expected.search || expected.hash || url.origin !== expected.origin) {
     throw new Error("Billplz public base URL must be HTTPS");
   }
+  if(pilotCheckout&&process.env.VERCEL_ENV==='preview'){
+    const bypass=process.env.MARIZ_POS_PILOT_CALLBACK_BYPASS;
+    if(!bypass||bypass.length<24||bypass.length>256)throw new Error('Protected sandbox callback is not configured');
+    // Provider-only server URL. Never attach this credential to redirect_url,
+    // payment_url, browser HTML, logs, or application error responses.
+    url.searchParams.set('x-vercel-protection-bypass',bypass);
+  }
   return url.toString();
 }
 
