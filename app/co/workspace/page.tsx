@@ -6,6 +6,8 @@ import KybPanel from './kyb-panel';import ClientWorkspace from './client-workspa
 import FeedbackWorkspace from './feedback-workspace';
 import BillingWorkspace from './billing-workspace';
 import CompanyContext from './company-context';
+import PosCommercialPanel from './pos-commercial-panel';
+import {commercialEnabled} from '../../../lib/mariz/pos-commercial-server.mjs';
 import s from './registration-ui.module.css';
 export const dynamic='force-dynamic';
 export const metadata={title:'Your company | MARIZ CO',description:'Your company profile, MARIZ services, billing and feedback workspace.'};
@@ -20,5 +22,5 @@ export default async function Workspace({searchParams}:{searchParams:Promise<{no
  const panel=!canAdmin?null:company.kyb_status?<KybPanel organizationId={company.organization_id}/>:<section className={s.status}><h2>Company details saved.</h2><p>Next, upload your SSM business profile. IC is optional. Nothing is sent for review until you choose Send for review.</p><form action={startKyb}><input type="hidden" name="organization_id" value={company.organization_id}/><button className={s.primary}>Continue to document upload →</button></form></section>;
  const notice=query.company&&query.company!==company.organization_id?'This account opens only its registered company.':query.notice;
  const section=query.section||(['application','documents'].includes(query.view||'')?'company':company.verification_status==='verified'?'home':'company');
- return <ClientWorkspace company={company} application={panel} companyContext={canAdmin&&section==='company'?<CompanyContext/>:undefined} notice={notice} section={section} view={query.view} account={{name:user.name,email:user.email}} billing={canAdmin&&section==='billing'?<BillingWorkspace/>:undefined} feedback={section==='feedback'?<FeedbackWorkspace companyName={company.legal_name} caseId={query.case}/>:undefined}/>;
+ return <ClientWorkspace serviceAccess={canAdmin&&company.verification_status==='verified'&&commercialEnabled()&&['home','services'].includes(section)?<PosCommercialPanel accessOnly/>:undefined} company={company} application={panel} companyContext={canAdmin&&section==='company'?<CompanyContext/>:undefined} notice={notice} section={section} view={query.view} account={{name:user.name,email:user.email}} billing={canAdmin&&section==='billing'?<BillingWorkspace/>:undefined} feedback={section==='feedback'?<FeedbackWorkspace companyName={company.legal_name} caseId={query.case}/>:undefined}/>;
 }

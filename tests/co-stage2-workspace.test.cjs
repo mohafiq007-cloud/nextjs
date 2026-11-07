@@ -34,6 +34,13 @@ const component = load('app/co/workspace/client-workspace.tsx', {
 const render = props => renderToStaticMarkup(React.createElement(component, {
   company, application: 'PRIVATE_DOCUMENT',companyContext:'PRIVATE_CONTEXT', billing: 'PRIVATE_BILLING', feedback: 'CASE_HISTORY', ...props,
 }));
+test('Preview service access replaces obsolete wording for approved administrators only',()=>{
+ for(const section of ['home','services']){
+  const html=render({section,serviceAccess:'VERIFIED_TEST_SERVICE'});
+  assert.match(html,/VERIFIED_TEST_SERVICE/);assert.doesNotMatch(html,/Activation unavailable|RM39/);
+  assert.doesNotMatch(render({section,serviceAccess:'PRIVATE_SERVICE',company:{...company,member_role:'member'}}),/PRIVATE_SERVICE/);
+ }
+});
 test('owner navigation has six destinations and marks the current page', () => {
   const html = render({section: 'feedback'});
   for (const section of ['home','services','company','billing','feedback','settings']) {
@@ -103,6 +110,8 @@ const validForm = () => {
 };
 async function billing(data) {
   const component = load('app/co/workspace/billing-workspace.tsx', {
+    './pos-commercial-panel': {__esModule:true,default:()=>{throw Error('Commercial panel must remain disabled in standard billing tests');}},
+    '../../../lib/mariz/pos-commercial-server.mjs': {commercialEnabled:()=>false},
     'next/link': {__esModule: true, default: ({children, ...props}) => React.createElement('a', props, children)},
     '../../../lib/mariz/client-billing-server': {clientBilling: async () => {
       if (data instanceof Error) throw data;
