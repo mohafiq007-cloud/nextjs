@@ -61,3 +61,14 @@ Located Drive candidate canonical/control sources:
 Dropbox blueprint search returned zero matches; not evidence of absence across Dropbox.
 Reconciliation: latest owner directives (Nov 13) override old plans; retain original canonical files untouched. No deletions, moves, imports or edits in Drive/Dropbox/MHQ. The GitHub control index is synchronized with discovered pointers only. Other source contents and canonical version precedence remain OPEN.
 Next bounded ticket: inspect mhq-v1, ai-business-os, mariz-pos and nextjs branch-level blueprint file inventories; compare Oct 28 Drive handover against Nov 13 directives; then prepare per-project exact Codex tickets. Do not dispatch Codex before source/branch/test verification.
+
+
+## Repository README reconciliation — 2026-11-13 (verified)
+Default-branch README files were actually read via authenticated GitHub connector; README blob SHA is NOT repository HEAD commit SHA.
+- mhq-v1 README blob 52cdf645f9dbe7c57da81ccad494991c23303e80: minimal Bolt starter reference only. This does NOT establish authoritative MHQ command centre source. Source mapping BLOCKED pending branches/code inspection.
+- ai-business-os README blob 9de59f7da3cad01025f9805a54a5f9d6fee9637a: describes standalone multi-tenant SME intelligence platform with Supabase auth, RLS, command centre, agents, approvals, knowledge hub, entitlements. Treat as independent project, NOT interchangeable with MHQ or MARIZ HQ without verified ownership.
+- mariz-pos README blob 9afef0d607dc509385b252807aaee065b523b714: historical Nov 2 operational Preview acceptance, immutable preview linked to app commit 739426b316e091e0f1b9634b4127b3fa2939f608, explicit production NO-GO. LATER Nov 5–8 accepted offline custody/hosted preflight work supersedes this checkpoint where evidenced; do not rerun 17 browser observations or old acceptance.
+- nextjs default README blob e215bc4ccf138bbc38ad58ad57e92135484b3c0f: generic create-next-app starter. It is NOT canonical V5.7 homepage. The mariz-hq-v2-foundation branch contains a separate preview and portfolio blueprints; canonical V5.7 source still UNKNOWN.
+GitHub code search for 'roadmap'/'blueprint' across all eight repos returned no indexed matches; cannot infer files absent, especially on non-default branches. Need branch-specific tree inventories. Search limitation must be recorded.
+Reconciled owner precedence: 13 Nov toolkit three-card V5.7 direction; Recipe Costing only; no live deploy; POS latest accepted custody and production NO-GO; avoid duplicate Codex tests. No Codex READY tickets issued from README-only inspection.
+Next single bounded discovery ticket: branch-specific file inventory for mariz-pos accepted-v1.3 and nextjs mariz-hq-v2-foundation, then inspect exact latest POS blueprint and source SHA; do not send broad repo scan to Codex.
