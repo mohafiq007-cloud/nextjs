@@ -93,3 +93,19 @@ Portfolio-specific next bounded tickets:
 4. MHQ-SRC-01: inspect mhq-finance-stage1 actual modules and reconcile against finance/filing master; NO personal data writes.
 5. CO-SRC-01: identify active CO/auth/KYB branch and compare October handover to November behavior; no speculative rewrite.
 All tickets currently PREP, not CODEX READY. Never claim full synchronization of every code file, external Drive or live infrastructure. No deployment, payment or cloud changes.
+
+
+## Authoritative source and test-evidence review — 2026-11-14
+Actual sources read in this session:
+A. Google Drive MARIZ_ECOSYSTEM_MASTER_CODEX_HANDOVER_V4_2026-10-28.md (file id 1F8ahrLCZHo1ZYn2fzNbGjjIJA7ahzoPx). It says FINAL SINGLE HANDOVER **NOT EXECUTED** as of Oct 28, lists historic deployment routes and providers, prohibits new architecture/production changes without verification. Superseded for homepage by Nov 13 owner three-card direction and for Library/Arcade visibility by Nov 4 owner freeze. Old V4 cannot authorize deployments.
+B. Google Drive MARIZ_CO_CODEX_MASTER_EXECUTION_HANDOVER_V3_2026-10-28.md (id 1pL2X7NmZNg_aPQMEmvPKXT_QthpIrziO). Historical **NOT YET EXECUTED OR DEPLOYED** at document date. Names CO Vercel project mariz-co, admin Cloudflare and Neon auth branch br-bold-unit-aothxcnn (not main); all live routing/config must be rechecked. Explicitly forbids simulated PIN replacement and live billing.
+C. Google Drive MARIZ_MHQ_COMPLETE_CODEX_HANDOVER_2026-10-25.md (id 19Q-F0RC9Hsf50McfWqrtj1n-vsBxK-6I). Continuation, NOT replacement of Oct 23 canonical Library file MARIZ_MHQ_MASTER_CODEX_EXECUTION_2026-10-23.md (not located here). References local Windows report not remotely inspected; beta library NO-GO, historical test results are uncorroborated operator reports. Newer owner froze Library/Arcade; do not reactivate.
+D. GitHub mariz-pos/planning/pos-first-commercial-20261105/docs/blueprints/CF_HOSTED_DEMO_OFFLINE_PREFLIGHT_2026-11-08.md blob f6989c147d5ef4ef7dfb283680dbee6819ab8fb2, full 8455 chars read. Completion notice: local custody primary artifact audit closed by later Codex operator, 68 ZIP entries, 67/67 file hashes and sizes, 36 test groups; ZIP SHA256 444a988ab683008a48bd0b69b78f7bd12236ec7d8a39eca85e5428fbde4bc408. These are **operator-reported** not independently inspected by this assistant. Offline dry-run bundle measurement, CPU/startup, static security checks and global-limit analysis remain pending; hosted pilot and production NO-GO. Do NOT rerun custody step 1 or RM59 transaction.
+E. GitHub mhq-v1/mhq-finance-stage1/src/App.tsx blob db4f3bee44d99376c3129f7ed5e0a6792bd3aa1e, actual source file exists (1738 chars). Does not prove deployed finance system or finance E2E tests.
+F. GitHub nextjs/mariz-hq-v2-foundation/app/page.tsx blob 8ec17197a7be7b6a6f0d35354feabf8a145d5bf2 (12503 chars), HQ V2 preview; NOT verified canonical V5.7.
+Evidence classification:
+- VERIFIED: source text, branch/path/blob, exact wording of historical handovers and POS blueprint.
+- OPERATOR-REPORTED: POS custody PASS and previous browser checks, Library staging admission burst.
+- NOT VERIFIED: local ZIP bytes, Worker upload size, CPU/startup, live domain/deploy SHA, full MHQ finance E2E, V5.7 source, real tenant/billing toolkit tests.
+- SUPERSEDED: Oct 28 public Business/Arcade/Library homepage and library/arcade launch plan by Nov owner direction; older payment proposals by live Billplz and owner gates.
+Result: no full portfolio release GO; no Codex READY ticket from this review alone. Highest-value next independent work: locate canonical V5.7 source and verify actual live deployment binding, or conduct POS offline steps 2–6 only in local custody environment with strict no-cloud stop. Do not use source-name guesses as production facts.
