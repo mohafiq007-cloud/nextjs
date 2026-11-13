@@ -72,3 +72,24 @@ Default-branch README files were actually read via authenticated GitHub connecto
 GitHub code search for 'roadmap'/'blueprint' across all eight repos returned no indexed matches; cannot infer files absent, especially on non-default branches. Need branch-specific tree inventories. Search limitation must be recorded.
 Reconciled owner precedence: 13 Nov toolkit three-card V5.7 direction; Recipe Costing only; no live deploy; POS latest accepted custody and production NO-GO; avoid duplicate Codex tests. No Codex READY tickets issued from README-only inspection.
 Next single bounded discovery ticket: branch-specific file inventory for mariz-pos accepted-v1.3 and nextjs mariz-hq-v2-foundation, then inspect exact latest POS blueprint and source SHA; do not send broad repo scan to Codex.
+
+
+## Branch-level reconciliation — 2026-11-14 (source reads, no execution)
+All 8 accessible repos had their branch names enumerated, including 10 nextjs, 9 mariz-pos, 4 mhq-v1, 2 ai-business-os, 1 pos-saas, 1 mariz-sales-desk, many restaurant-pos-system and mariz-arcade branches. Branch presence is NOT proof of current deployed source or code readiness.
+Verified exact file paths and blob SHAs:
+- mariz-pos/planning/pos-first-commercial-20261105/docs/blueprints/CF_HOSTED_DEMO_OFFLINE_PREFLIGHT_2026-11-08.md blob f6989c147d5ef4ef7dfb283680dbee6819ab8fb2. Document explicitly PREPARED/DOCUMENTATION ONLY; pinned source commit 51314a0e7a87e8c1dffb424ba45b8ff617dd37b0; 36-check custody reported but local release archive unavailable to GitHub connector; Cloudflare hosted demo remains NO-GO. It identifies Vercel-oriented accepted source, global pg pool and no committed Cloudflare adapter. Do not claim hosted readiness or redo completed local custody tests.
+- mariz-pos/planning/pos-first-commercial-20261105/package.json blob c90555e37fac53760386cce4aa12b7f53dad9c3f; Next 16.4.3, test script node --test tests/*.test.mjs. No tests run in this reconciliation.
+- mariz-pos/demo/pos-demo-01r-accepted/README.md blob 9afef0d607dc509385b252807aaee065b523b714: Nov 2 preview historical acceptance only. Demo branch package blob c90555e37fac53760386cce4aa12b7f53dad9c3f.
+- nextjs/mariz-hq-v2-foundation/app/page.tsx blob 8ec17197a7be7b6a6f0d35354feabf8a145d5bf2: section union home/company/custom, product array POS and Custom Web Software; no three-card Toolkits homepage. This is HQ V2 preview, NOT verified V5.7 canonical. Do not modify as if canonical.
+- nextjs/mariz-hq-v2-foundation/package.json blob 364b5478ddbac2b8b7aeda051cc90b97c1448a9a; Next 16.2.4, scripts build/lint/typecheck. No tests run.
+- mhq-v1/mhq-finance-stage1/package.json blob 1c741492fc0745e606f6c96e2a9ec108d420c1ab: Vite React/TS, Supabase client, idb, OCR tesseract. Confirms code exists on finance branch; README alone not a roadmap.
+- restaurant-pos-system/feature/mariz-hq-home/README.md blob 898912a484714e4507cf37f5f4c6bd9f564f748e: earlier SaaS foundation and Stripe/PayPal hooks. Do not treat those as current MARIZ Billplz payment authorization.
+- restaurant-pos-system/feature/mariz-hq-home/package.json blob 5a50da02295f65c30305ff37d773be931124d9f8: Vite React/TS with extensive simulation/test scripts. Avoid rerunning unmodified accepted tests.
+Source precedence: latest explicit owner instructions > latest independently verified accepted artifact and tests > latest relevant branch blueprint > older README/Drive handover. Conflicting or uncertain items remain BLOCKED; never silently select a branch as canonical.
+Portfolio-specific next bounded tickets:
+1. HOMEPAGE-SRC-01: locate original V5.7 design/artwork source and compare hashes to HQ V2; read-only, no Codex until found.
+2. TOOLKIT-ENG-01: standalone deterministic Recipe Costing calculation tests on isolated branch, no billing/data/cloud writes; needs verified repo selection and fixtures.
+3. POS-CF-02: read latest offline preflight remainder and any accepted updated report, then classify unresolved Worker size/CPU/transport gaps; NO deploy.
+4. MHQ-SRC-01: inspect mhq-finance-stage1 actual modules and reconcile against finance/filing master; NO personal data writes.
+5. CO-SRC-01: identify active CO/auth/KYB branch and compare October handover to November behavior; no speculative rewrite.
+All tickets currently PREP, not CODEX READY. Never claim full synchronization of every code file, external Drive or live infrastructure. No deployment, payment or cloud changes.
