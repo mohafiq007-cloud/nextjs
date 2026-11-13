@@ -40,3 +40,24 @@ For each session, update the master ledger on an isolated non-production branch 
 
 ## Initial audit and open limitations
 2026-11-13: User explicitly authorized portfolio-wide scheduled roadmap synchronization and Codex-ready handoff discipline. Verified GitHub repo mohafiq007-cloud/nextjs, branch mariz-hq-v2-foundation. Existing master location across MHQ/Drive/other repos not yet identified; this is a control index until reconciled. No claim of engineering tests, deployment readiness, or master synchronization across all external systems.
+
+
+## Discovery synchronization checkpoint — 2026-11-13
+Method: authenticated GitHub repository listing and targeted Google Drive searches (master, roadmap, blueprint, MHQ, MARIZ, POS), plus Dropbox 'blueprint' search. This is a VERIFIED DISCOVERY INDEX, not a completed content merge or exhaustive account scan. The Drive MARIZ Recovery Master was read; it is an October recovery checkpoint with launch NO-GO, NOT an up-to-date November execution source. Never promote older checkpoint over newer user decisions.
+Accessible GitHub repository names: nextjs; pos-saas; restaurant-pos-system; ai-business-os; mhq-v1; mariz-arcade; mariz-pos; mariz-sales-desk. Default branches observed: main for most, accepted-v1.3 for one (mapping not yet verified). No repository-wide blueprint content inventory yet.
+Located Drive candidate canonical/control sources:
+- MARIZ recovery master (Oct 9): https://docs.google.com/document/d/1uf7KOCSCzBMLKjoHVPMe_8zYGEcnTSAKaY1Kchk_9UE/edit — read; historical, not current.
+- MARIZ controlled release checkpoint (Oct 9): https://docs.google.com/document/d/1GxjyzZ_4GQ0Ocsd3-qvq7gZQoxECkrW4J5pWwgoY0V4/edit — located, content pending.
+- MARIZ ecosystem Codex handover V4 (Oct 28): https://drive.google.com/file/d/1F8ahrLCZHo1ZYn2fzNbGjjIJA7ahzoPx/view — located, content pending.
+- MARIZ CO Codex execution handover V3 (Oct 28): https://drive.google.com/file/d/1pL2X7NmZNg_aPQMEmvPKXT_QthpIrziO/view — located, content pending.
+- MARIZ/MHQ complete Codex handover (Oct 25): https://drive.google.com/file/d/19Q-F0RC9Hsf50McfWqrtj1n-vsBxK-6I/view — located, content pending.
+- MHQ sealed master register (Nov 3): https://docs.google.com/spreadsheets/d/1u54hKhDR3yBb8okG483E19RTsZkUGAOk/edit — located; content pending.
+- MARIZ Partner beta handover (Oct 20): https://drive.google.com/file/d/1EjzzVTVAVPe1xLMxvBYbclNYCamZHU2s/view — located; content pending.
+- GoldCopilot cloud build spec: https://docs.google.com/document/d/1rZv-hKsm8R-fbF7EimMGMijMURNpoyx7xIu6gjr7FNo/edit — located; content pending.
+- GoldCopilot master operating prompt: https://docs.google.com/document/d/1KU9vaPwo2HTiLHB3q-F58kw-1G94QC1DDNzbTOu_vFs/edit — located; content pending.
+- ECHOSEED game charter: https://docs.google.com/document/d/1gXXvrG5DxOF1oF2KPVfGCmeSX_8SAMWBs0ChSYGaCqc/edit — located; content pending.
+- IQF editorial audit: https://docs.google.com/document/d/1SAkpuBtbxMYDMrf9v29YrOR08qTHGt0KmKFH6QEZOTw/edit — located; content pending.
+- MARIZ Learn roadmap (Oct 20): https://drive.google.com/file/d/1Vu3xnboOtVOJA1Lho314-yz0NxgTnB_S/view — parked by later owner decision; do not restart.
+Dropbox blueprint search returned zero matches; not evidence of absence across Dropbox.
+Reconciliation: latest owner directives (Nov 13) override old plans; retain original canonical files untouched. No deletions, moves, imports or edits in Drive/Dropbox/MHQ. The GitHub control index is synchronized with discovered pointers only. Other source contents and canonical version precedence remain OPEN.
+Next bounded ticket: inspect mhq-v1, ai-business-os, mariz-pos and nextjs branch-level blueprint file inventories; compare Oct 28 Drive handover against Nov 13 directives; then prepare per-project exact Codex tickets. Do not dispatch Codex before source/branch/test verification.
