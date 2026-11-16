@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MARIZ">
+  <rect width="64" height="64" rx="15" fill="#29251f"/>
+  <rect x="3" y="3" width="58" height="58" rx="12" fill="none" stroke="#a98647" stroke-width="2"/>
+  <text x="32" y="45" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="43" fill="#d4b578">M</text>
+</svg>
